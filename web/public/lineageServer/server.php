@@ -1590,7 +1590,8 @@ function ls_frontPage() {
     $numNameMatches = 0;
 
     $forceIndexClause = "";
-    
+
+    $needUsersTable = false;
     
 
     if( $email_sha1 != "" ) {
@@ -1598,11 +1599,13 @@ function ls_frontPage() {
         $filterClause = " WHERE users.email_sha1 = '$email_sha1' ";
         $filter = "[email hash]";
         $customFilterSet = true;
+        $needUsersTable = true;
         }
     else if( $emailFilter != "" ) {
         $filterClause = " WHERE users.email = '$emailFilter' ";
         $filter = $emailFilter;
         $customFilterSet = true;
+        $needUsersTable = true;
         }
     else if( $nameFilter != "" ) {
         // name filter is used as prefix filter for speed
@@ -1690,7 +1693,8 @@ function ls_frontPage() {
 
     ls_printFrontPageRows( $forceIndexClause,
                            "$filterClause AND age >= 50", "death_time DESC",
-                           $numPerList );
+                           $numPerList,
+                           $needUsersTable );
 
 
     echo "<tr><td colspan=6><font size=5>Today's Deep Roots:".
@@ -1700,7 +1704,8 @@ function ls_frontPage() {
         $forceIndexClause,
         "$rootFilterClause AND death_time >= DATE_SUB( NOW(), INTERVAL 1 DAY )",
         "lineage_depth DESC, death_time DESC",
-        $numPerList );
+        $numPerList,
+        $needUsersTable );
     
     
     echo "<tr><td colspan=6>".
@@ -1709,7 +1714,8 @@ function ls_frontPage() {
     ls_printFrontPageRows( $forceIndexClause,
                            "$filterClause AND age >= 20 AND age < 50",
                            "death_time DESC",
-                           $numPerList );
+                           $numPerList,
+                           $needUsersTable );
 
 
     echo "<tr><td colspan=6>".
@@ -1717,7 +1723,8 @@ function ls_frontPage() {
     
     ls_printFrontPageRows( $forceIndexClause,
                            "$filterClause AND age < 20", "death_time DESC",
-                           $numPerList );
+                           $numPerList,
+                           $needUsersTable );
 
 
     
@@ -1729,7 +1736,8 @@ function ls_frontPage() {
         "$rootFilterClause AND ".
         "death_time >= DATE_SUB( NOW(), INTERVAL 1 WEEK )",
         "lineage_depth DESC, death_time DESC",
-        $numPerList );
+        $numPerList,
+        $needUsersTable );
 
 
     echo "<tr><td colspan=6><font size=5>All Time Deep Roots:".
@@ -1739,7 +1747,8 @@ function ls_frontPage() {
         $forceIndexClause,
         $rootFilterClause,
         "lineage_depth DESC, death_time DESC",
-        $numPerList );
+        $numPerList,
+        $needUsersTable );
 
     
     
@@ -1761,7 +1770,8 @@ function ls_frontPage() {
         $specialForceIndexClause,
         "$filterClause AND death_time >= DATE_SUB( NOW(), INTERVAL 1 DAY )",
         "generation DESC, death_time DESC",
-        $numPerList );
+        $numPerList,
+        $needUsersTable );
     
     
     echo "<tr><td colspan=6><font size=5>This Week's Long Lines:".
@@ -1771,7 +1781,8 @@ function ls_frontPage() {
         $forceIndexClause,
         "$filterClause AND death_time >= DATE_SUB( NOW(), INTERVAL 1 WEEK )",
         "generation DESC, death_time DESC",
-        $numPerList );
+        $numPerList,
+        $needUsersTable );
 
     
 
@@ -1780,7 +1791,8 @@ function ls_frontPage() {
     
     ls_printFrontPageRows( $forceIndexClause,
                            $filterClause, "generation DESC, death_time DESC",
-                           $numPerList );
+                           $numPerList,
+                           $needUsersTable );
 
 
     
@@ -1809,20 +1821,28 @@ function ls_getGrayPercent( $inDeathAgoSec ) {
 
 
 function ls_printFrontPageRows( $inForceIndexClause,
-                                $inFilterClause, $inOrderBy, $inNumRows ) {
+                                $inFilterClause, $inOrderBy, $inNumRows,
+                                $inNeedUsersTable ) {
     global $tableNamePrefix;
     global $photoServerURL, $usePhotoServer;
     global $ageLengthSeconds;
 
     $startTime = microtime( true );
 
+    $usersTableJoin = "";
+
+    if( $inNeedUsersTable ) {
+        $usersTableJoin =
+            "INNER JOIN $tableNamePrefix"."users as users ".
+            "ON lives.user_id = users.id ";
+        }
+    
     $query = "SELECT lives.id, display_id, player_id, name, ".
         "age, generation, death_time, deepest_descendant_generation, ".
         "servers.server " .
         "FROM $tableNamePrefix"."lives as lives ".
         " $inForceIndexClause ".
-        "INNER JOIN $tableNamePrefix"."users as users ".
-        "ON lives.user_id = users.id ".
+        " $usersTableJoin ".
         "INNER JOIN $tableNamePrefix"."servers as servers ".
         "ON lives.server_id = servers.id  ".
         "$inFilterClause ".
