@@ -28,3 +28,6 @@ server/lifeLog/
 server/categories
 server/objects
 server/transitions
+
+web/public/certbot
+data/certbot/*/*
