@@ -31,3 +31,5 @@ server/transitions
 
 web/public/certbot
 data/certbot/*/*
+
+web/public/*/log.txt
