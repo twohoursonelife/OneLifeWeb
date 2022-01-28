@@ -3,7 +3,7 @@
 // Basic settings
 // You must set these for the server to work
 
-require '../dbconfig.php';
+require '../config.php';
 
 // The URL of to the server.php script.
 $fullServerURL = "http://play.twohoursonelife.com/curseServer/server.php";
@@ -54,7 +54,7 @@ $minServedSecondsCount = 600;
 
 // should not contain spaces
 
-$sharedGameServerSecret = "secret_phrase";
+// $sharedGameServerSecret = "secret_phrase";
 
 
 
@@ -77,7 +77,7 @@ $enableLog = 1;
 
 
 // should web-based admin require yubikey two-factor authentication?
-$enableYubikey = 0;
+// $enableYubikey = 0;
 
 // 12-character Yubikey IDs, one list for each access password
 // each list is a set of ids separated by :
@@ -96,7 +96,7 @@ $yubicoSecretKey = "rcGgz0rca1gqqsa/GDMwXFAHjWw=";
 // in this file.
 // You can change this to your own string so that password hashes in
 // this file differ from hashes of the same passwords used elsewhere.
-$passwordHashingPepper = "262f43f043031282c645d0eb352df723a3ddc88f";
+// $passwordHashingPepper = "262f43f043031282c645d0eb352df723a3ddc88f";
 
 // passwords are given as hashes below, computed by:
 // hmac_sha1( $passwordHashingPepper,
@@ -116,8 +116,8 @@ $passwordHashingPepper = "262f43f043031282c645d0eb352df723a3ddc88f";
 // "secret" and "secret2"
 
 // hashes of passwords for for web-based admin access
-$accessPasswords = array( "8e409075ab35b161f6d2d57775e5efbee8d7b674",
-                          "20e1883a3d63607b60677dca87b41e04316ffc63" );
+// $accessPasswords = array( "8e409075ab35b161f6d2d57775e5efbee8d7b674",
+//                          "20e1883a3d63607b60677dca87b41e04316ffc63" );
 
 
 
