@@ -616,7 +616,7 @@ function ps_showDetail( $checkPassword = true ) {
     global $tableNamePrefix;
     
 
-    $email = ps_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i" );
+    $email = ps_requestFilter( "email", "/[A-Z0-9._%+\-]+/i" );
             
     $query = "SELECT id, photos_submitted, photos_rejected ".
         "FROM $tableNamePrefix"."users ".
@@ -654,7 +654,7 @@ function ps_deletePhoto() {
     global $tableNamePrefix;
     
 
-    $email = ps_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i" );
+    $email = ps_requestFilter( "email", "/[A-Z0-9._%+\-]+/i" );
     $id = ps_requestFilter( "id", "/[0-9]+/i", -1 );
 
     if( ! $id != -1 ) {
@@ -769,7 +769,7 @@ function ps_getSequenceNumber() {
     global $tableNamePrefix;
     
 
-    $email = ps_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = ps_requestFilter( "email", "/[A-Z0-9._%+\-]+/i" );
 
     if( $email == "" ) {
         ps_log( "getSequenceNumber denied for bad email" );
@@ -907,7 +907,7 @@ function ps_submitPhoto() {
 
     global $tableNamePrefix;
     
-    $email = ps_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = ps_requestFilter( "email", "/[A-Z0-9._%+\-]+/i" );
     $sequence_number = ps_requestFilter( "sequence_number", "/[0-9]+/i", "0" );
 
     if( $email == "" ) {
