@@ -1,1 +1,7 @@
-<?php $sharedSecret="replace_me_with_something_secret"; ?>
+<?php 
+
+require '../config.php';
+
+$sharedSecret=$sharedGameServerSecret; 
+
+?>
