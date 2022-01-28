@@ -32,7 +32,7 @@ function file_get_contents_safe( $inFileName ) {
 
 
 $action = or_requestFilter( "action", "/[A-Z_]+/i", "" );
-$email = or_requestFilter( "email", "/[A-Z0-9._%+-]+@[A-Z0-9.-]+/i", "" );
+$email = or_requestFilter( "email", "/[A-Z0-9._%+\-]+/i" );
 
 $twin_code = or_requestFilter( "twin_code", "/[A-F0-9]+/i", "" );
 $twin_code = strtoupper( $twin_code );
