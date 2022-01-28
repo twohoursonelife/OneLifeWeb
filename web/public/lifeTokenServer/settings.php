@@ -6,13 +6,13 @@
 require '../config.php';
 
 // The URL of to the server.php script.
-$fullServerURL = "http://localhost/jcr13/lifeTokenServer/server.php";
+$fullServerURL = "http://play.twohoursonelife.com/lifeTokenServer/server.php";
 
 
 
 
 // The URL of the main, public-face website
-$mainSiteURL = "http://localhost/jcr13/";
+$mainSiteURL = "http://play.twohoursonelife.com/";
 
 
 
