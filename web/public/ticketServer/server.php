@@ -277,7 +277,7 @@ function ts_setupDatabase() {
             "discord_id VARCHAR(255) NOT NULL UNIQUE," .
             "creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," .
             "email CHAR(255) NOT NULL UNIQUE," .
-            "blocked TINYINT NOT NULL," .
+            "blocked TINYINT NOT NULL DEFAULT '0'," .
             "time_played INT(11) NOT NULL DEFAULT '0', " . 
             "last_activity TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );";
 
