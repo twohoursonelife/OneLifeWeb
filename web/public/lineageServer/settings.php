@@ -3,10 +3,7 @@
 // Basic settings
 // You must set these for the server to work
 
-$databaseServer = "localhost";
-$databaseUsername = "testUser";
-$databasePassword = "testPassword";
-$databaseName = "test";
+require '../dbconfig.php';
 
 // The URL of to the server.php script.
 $fullServerURL = "http://play.twohoursonelife.com/lineageServer/server.php";
