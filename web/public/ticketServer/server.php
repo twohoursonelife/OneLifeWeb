@@ -69,13 +69,13 @@ $setup_footer = "
 
 // ensure that magic quotes are OFF
 // we hand-filter all _REQUEST data with regexs before submitting it to the DB
-if( get_magic_quotes_gpc() ) {
-    // force magic quotes to be removed
-    $_GET     = array_map( 'ts_stripslashes_deep', $_GET );
-    $_POST    = array_map( 'ts_stripslashes_deep', $_POST );
-    $_REQUEST = array_map( 'ts_stripslashes_deep', $_REQUEST );
-    $_COOKIE  = array_map( 'ts_stripslashes_deep', $_COOKIE );
-    }
+//if( get_magic_quotes_gpc() ) {
+//    // force magic quotes to be removed
+//    $_GET     = array_map( 'ts_stripslashes_deep', $_GET );
+//    $_POST    = array_map( 'ts_stripslashes_deep', $_POST );
+//    $_REQUEST = array_map( 'ts_stripslashes_deep', $_REQUEST );
+//    $_COOKIE  = array_map( 'ts_stripslashes_deep', $_COOKIE );
+//    }
     
 
 
@@ -138,14 +138,11 @@ else if( $action == "clear_log" ) {
 else if( $action == "sell_ticket" ) {
     ts_sellTicket();
     }
-else if( $action == "block_ticket_id" ) {
+else if( $action == "block_login_key" ) {
     ts_blockTicketID();
     }
-else if( $action == "delete_ticket_id" ) {
+else if( $action == "delete_login_key" ) {
     ts_deleteTicketID();
-    }
-else if( $action == "bulk_email_opt_out" ) {
-    ts_bulkEmailOptOut();
     }
 else if( $action == "check_ticket" ) {
     ts_checkTicket();
@@ -153,13 +150,7 @@ else if( $action == "check_ticket" ) {
 else if( $action == "get_ticket_email" ) {
     ts_getTicketEmail();
     }
-else if( $action == "show_downloads" ) {
-    ts_showDownloads();
-    }
-else if( $action == "download" ) {
-    ts_download();
-    }
-else if( $action == "get_ticket_id" ) {
+else if( $action == "get_login_key" ) {
     ts_getTicketID();
     }
 else if( $action == "check_ticket_hash" ) {
@@ -174,32 +165,8 @@ else if( $action == "show_detail" ) {
 else if( $action == "edit_ticket" ) {
     ts_editTicket();
     }
-else if( $action == "send_group_email" ) {
-    ts_sendGroupEmail();
-    }
-else if( $action == "send_single_email" ) {
-    ts_sendSingleEmail();
-    }
-else if( $action == "send_all_note" ) {
-    ts_sendAllNote();
-    }
-else if( $action == "add_coupon_codes" ) {
-    ts_addCouponCodes();
-    }
-else if( $action == "clear_coupon_codes" ) {
-    ts_clearCouponCodes();
-    }
-else if( $action == "send_all_file_note" ) {
-    ts_sendAllFileNote();
-    }
-else if( $action == "email_opt_in" ) {
-    ts_emailOptIn();
-    }
 else if( $action == "edit_email" ) {
     ts_editEmail();
-    }
-else if( $action == "change_email" ) {
-    ts_changeEmail();
     }
 else if( $action == "logout" ) {
     ts_logout();
@@ -234,12 +201,11 @@ else if( preg_match( "/server\.php/", $_SERVER[ "SCRIPT_NAME" ] ) ) {
     
     // check if our tables exist
     $exists = ts_doesTableExist( $tableNamePrefix . "tickets" ) &&
-        ts_doesTableExist( $tableNamePrefix . "log" ) &&
-        ts_doesTableExist( $tableNamePrefix . "downloads" );
+        ts_doesTableExist( $tableNamePrefix . "log" );
     
         
     if( $exists  ) {
-        echo "Ticket Server database setup and ready";
+        echo "Ticket Server database setup and ready <a href=\"index.php\">Login Here</a>";
         }
     else {
         // start the setup procedure
@@ -286,6 +252,7 @@ function ts_setupDatabase() {
         // use INNODB engine so table can be locked
         $query =
             "CREATE TABLE $tableName(" .
+			"log_id INT(10) NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "entry TEXT NOT NULL, ".
             "entry_time DATETIME NOT NULL );";
 
@@ -305,45 +272,17 @@ function ts_setupDatabase() {
         // this table contains general info about each ticket
         $query =
             "CREATE TABLE $tableName(" .
-            "ticket_id VARCHAR(255) NOT NULL PRIMARY KEY," .
-            "sale_date DATETIME NOT NULL," .
-            "last_download_date DATETIME NOT NULL," .
-            "name TEXT NOT NULL, ".
-            "email CHAR(255) NOT NULL," .
-            "order_number CHAR(255) NOT NULL," .
-            "tag CHAR(255) NOT NULL," .
-            "coupon_code TEXT NOT NULL," .
-            "email_sent TINYINT NOT NULL," .
+            "key_id INT(10) NOT NULL PRIMARY KEY AUTO_INCREMENT," .
+            "login_key VARCHAR(255) NOT NULL UNIQUE," .
+            "discord_id VARCHAR(255) NOT NULL UNIQUE," .
+            "creation_date DATETIME NOT NULL," .
+            "email CHAR(255) NOT NULL UNIQUE," .
             "blocked TINYINT NOT NULL," .
-            "download_count INT NOT NULL, ".
-            "email_opt_in TINYINT NOT NULL );";
+            "time_played INT(11) NOT NULL DEFAULT '0', " . 
+            "last_activity TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP );";
 
         $result = ts_queryDatabase( $query );
 
-        echo "<B>$tableName</B> table created<BR>";
-        }
-    else {
-        echo "<B>$tableName</B> table already exists<BR>";
-        }
-
-
-    
-    
-    $tableName = $tableNamePrefix . "downloads";
-    if( ! ts_doesTableExist( $tableName ) ) {
-
-        // this table contains information about each download that occurred
-        $query =
-            "CREATE TABLE $tableName(" .
-            "ticket_id VARCHAR(255) NOT NULL," .
-            "download_date DATETIME NOT NULL," .
-            "file_name TEXT NOT NULL," .
-            "blocked TINYINT NOT NULL," .
-            "ip_address CHAR(255) NOT NULL," .
-            "PRIMARY KEY( ticket_id, download_date ) );";
-                
-        $result = ts_queryDatabase( $query );
-        
         echo "<B>$tableName</B> table created<BR>";
         }
     else {
@@ -406,127 +345,59 @@ function ts_clearLog() {
         }
     }
 
-
-
-
+function ticketGeneration(){
+    global $tableNamePrefix, $fastspringPrivateKeys, $remoteIP;
+    global $ticketIDLength, $ticketGenerationSecret, $ts_mysqlLink;
+	$login_key = "";
+		
+		// repeat hashing new rand values, mixed with our secret
+		// for security, until we have generated enough digits.
+		while( strlen( $login_key ) < $ticketIDLength ) {
+			
+			$randVal = rand();
+			
+			$hash_bin =
+				ts_hmac_sha1_raw( $ticketGenerationSecret, uniqid( "$randVal", true ) );
+			
+		
+			$hash_base32 = ts_readableBase32Encode( $hash_bin );
+			
+			$digitsLeft = $ticketIDLength - strlen( $login_key );
+			
+			$login_key = $login_key . substr( $hash_base32,
+											0, $digitsLeft );
+			}
+		
+		
+		// break into "-" separated chunks of 5 digits
+		$login_key_chunks = str_split( $login_key, 5 );
+		
+		$login_key = implode( "-", $login_key_chunks );
+		return $login_key;
+}
 
 
 
 function ts_sellTicket() {
     global $tableNamePrefix, $fastspringPrivateKeys, $remoteIP;
     global $ticketIDLength, $ticketGenerationSecret, $ts_mysqlLink;
-
-
-    $tags = ts_requestFilter( "tags", "/[A-Z0-9_,-]+/i" );
-    if( $tags == "" ) {
-        // no tag set?
-        // default to first one
-        $arrayKeys = array_keys( $fastspringPrivateKeys );
-        $tags = $arrayKeys[ 0 ];
-        }
     
-    $separateTags = preg_split( "/,/", $tags );
-
-
-    $privateKey = "";
-    $tag = "";
-    
-    for( $t=0; $t<count( $separateTags ); $t++ ) {
-        if( array_key_exists( $separateTags[ $t ],
-                              $fastspringPrivateKeys  ) ) {
-
-            $tag = $separateTags[ $t ];
-            
-            $privateKey = $fastspringPrivateKeys[ $tag ];
-            }
-        }
-    
-
-    // no need to pass these through a regex, because they aren't passed
-    // anywhere, and we're not sure what characters security_data
-    // might contain anyway
-
-    $security_data = $_REQUEST[ "security_data" ];
-    $security_hash = $_REQUEST[ "security_hash" ];
-
-    $string_to_hash = $security_data . $privateKey;
-    
-    $correct_hash = md5( $string_to_hash );
-    
-
-    if( $correct_hash != $security_hash ) {
-
-        
-        ts_log( "Ticket sale security check failed, from $remoteIP, ".
-                "data = \"$security_data\", hash = \"$security_hash\",".
-                "looking for hash = \"$correct_hash\"," .
-                "(data hashed = \"$string_to_hash\")" );
-        
-        return;  /* FAILED CHECK */
-        }
-    
-
-        
-    $order_number = ts_requestFilter( "reference", "/[A-Z0-9-]+/i" );
-
-
-    // these allow convenient linking back to main server site after
-    // a manual order goes through
-    $manual = ts_requestFilter( "manual", "/[01]/", "0" );
-
-    
-    // this allows manual ticket creation to override email opt-in
-    // defaults to on if not specified
-    $email_opt_in = ts_requestFilter( "email_opt_in", "/[01]/", "1" );
-
-
-
-    // if manual, check password and display return-to-main link
-    if( $manual == 1 ) {
-        ts_checkPassword( "sell_ticket" );
-        
-        // not returning generated ticket to FastSpring
-        // (manual order from ticket server interface)
-        // okay to show convenient HTML link back to main.
-        echo "[<a href=\"server.php?".
-            "action=show_data" .
-            "\">Main</a>]<br><br><br>";
-        }
-
-    
-    
-
-    
-
-    $bulk = ts_requestFilter( "bulk", "/[01]/", "0" );
-
-    $emailList = array();
-
-    
-    if( ! $bulk ) {
-        
-        $email = ts_requestFilter( "email", "/[A-Z0-9._%+-]+@[A-Z0-9.-]+/i" );
-
-        $emailList[] = $email;
-        }
-    else {
-
-        $emails = "";
-        if( isset( $_REQUEST[ "emails" ] ) ) {
-            $emails = $_REQUEST[ "emails" ];
-            }
-    
-        $emailList = preg_split( "/\s+/", $emails );
-        }
-
     $failedCount = 0;
     $successCount = 0;
 
-    foreach( $emailList as $email ) {
-        
-        $unfilteredEmail = $email;
-        $email = ts_filter( $email, "/[A-Z0-9._%+-]+@[A-Z0-9.-]+/i", "" );
 
+	$emailList = array();
+
+    $email = ts_requestFilter( "email", "/[A-Z0-9._%+\-]+/i" );
+
+    $emailList[] = $email;
+
+
+    //foreach( $emailList as $email ) {
+    //    
+        $unfilteredEmail = $email;
+        $email = ts_filter( $email, "/[A-Z0-9._%+\-]+/i", "" );
+	
         if( $email == "" ) {
             echo "Invalid email address: $unfilteredEmail<br>";
             $failedCount++;
@@ -553,49 +424,48 @@ function ts_sellTicket() {
                     }
                 }
             
-
+	
     
-            $found_unused_id = 0;
-            $salt = 0;
+            $tries = 0;
+            $success = 0;
             
-            
-            while( ! $found_unused_id ) {
+            while( $tries < 3 && $success == 0 ) {
         
         
         
-                $ticket_id = "";
+                $login_key = "";
                 
                 // repeat hashing new rand values, mixed with our secret
                 // for security, until we have generated enough digits.
-                while( strlen( $ticket_id ) < $ticketIDLength ) {
+                while( strlen( $login_key ) < $ticketIDLength ) {
                     
                     $randVal = rand();
                     
                     $hash_bin =
                         ts_hmac_sha1_raw( $ticketGenerationSecret,
-                                          $name . uniqid( "$randVal"."$salt",
+                                          uniqid( "$randVal",
                                                           true ) );
                     
             
                     $hash_base32 = ts_readableBase32Encode( $hash_bin );
                     
-                    $digitsLeft = $ticketIDLength - strlen( $ticket_id );
+                    $digitsLeft = $ticketIDLength - strlen( $login_key );
                     
-                    $ticket_id = $ticket_id . substr( $hash_base32,
+                    $login_key = $login_key . substr( $hash_base32,
                                                       0, $digitsLeft );
                     }
                 
         
                 // break into "-" separated chunks of 5 digits
-                $ticket_id_chunks = str_split( $ticket_id, 5 );
+                $login_key_chunks = str_split( $login_key, 5 );
                 
-                $ticket_id = implode( "-", $ticket_id_chunks );
+                $login_key = implode( "-", $login_key_chunks );
                 
                 
                 
                 /*
-                  "ticket_id VARCHAR(255) NOT NULL PRIMARY KEY," .
-                  "sale_date DATETIME NOT NULL," .
+                  "login_key VARCHAR(255) NOT NULL PRIMARY KEY," .
+                  "creation_date DATETIME NOT NULL," .
                   "last_download_date DATETIME NOT NULL," .
                   "name TEXT NOT NULL, ".
                   "email CHAR(255) NOT NULL," .
@@ -608,49 +478,44 @@ function ts_sellTicket() {
                   "email_opt_in TINYINT NOT NULL );";
                 */
                 
+                $rand_discordid = mt_rand(000000,999999);
 
                 // opt-in to emails by default
                 $query = "INSERT INTO $tableNamePrefix". "tickets VALUES ( " .
-                    "'$ticket_id', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ".
-                    "'$name', '$email', '$order_number', ".
-                    "'$tag', '', '0', '0', '0', " .
-                    "'$email_opt_in' );";
-
-
+                    "NULL,'$login_key', $rand_discordid, CURRENT_TIMESTAMP, '$email', '0', '0', CURRENT_TIMESTAMP );";
+	
+	
                 $result = mysqli_query( $ts_mysqlLink, $query );
                 
                 if( $result ) {
-                    $found_unused_id = 1;
+                    $success = 1;
                     
-                    ts_log( "Ticket $ticket_id created by $remoteIP" );
+                    ts_log( "Ticket $login_key created by $remoteIP" );
                     
-
-                    if( ! $manual ) {
-                        echo "$ticket_id";
-                        }
-                    else {
-                        echo "$email<br>$ticket_id<br><br>\n";
-                        }
+	
+                    echo "Successfully created user<br><br>\n";
+					
                     $successCount++;
-                    }
-                else {
+					ts_showData();
+                }else {
                     global $debug;
                     if( $debug == 1 ) {
                         echo "Duplicate ids?  Error:  " .
                             mysqli_error( $ts_mysqlLink ) ."<br>";
                         }
                     // try again
-                    $salt += 1;
-                    }
-                }
-
-            }
-        }
-
-    if( $manual ) {
-        echo "<br><br>Summary:  $failedCount Failed, ".
-        "$successCount newly created";
-        }
+					ts_log( "Unable to create user: $email with key $login_key" );
+					$tries += 1;
+					
+					if($tries == 3){
+						echo "Unable to create user, check email isn't in use";
+						ts_showData();
+					}
+				}
+			}
+	
+		}
+	//}
     }
 
 
@@ -660,20 +525,20 @@ function ts_sellTicket() {
 function ts_getTicketID() {
     global $tableNamePrefix, $sharedEncryptionSecret;
 
-    $email = ts_requestFilter( "email", "/[A-Z0-9._%+-]+@[A-Z0-9.-]+/i" );
+    $email = ts_requestFilter( "email", "/[A-Z0-9._%+\-]+/i" );
 
-    $query = "SELECT ticket_id FROM $tableNamePrefix"."tickets ".
+    $query = "SELECT login_key FROM $tableNamePrefix"."tickets ".
         "WHERE email = '$email' AND blocked = '0';";
     $result = ts_queryDatabase( $query );
 
     $numRows = mysqli_num_rows( $result );
 
-    $ticket_id = "";
+    $login_key = "";
     
     // could be more than one with this email
     // return first only
     if( $numRows > 0 ) {
-        $ticket_id = ts_mysqli_result( $result, 0, "ticket_id" );
+        $login_key = ts_mysqli_result( $result, 0, "login_key" );
         }
     else {
         echo "DENIED";
@@ -683,11 +548,11 @@ function ts_getTicketID() {
 
     
     // remove hyphens
-    $ticket_id = implode( preg_split( "/-/", $ticket_id ) );
+    $login_key = implode( preg_split( "/-/", $login_key ) );
 
-    $ticket_id_bits = ts_readableBase32DecodeToBitString( $ticket_id );
+    $login_key_bits = ts_readableBase32DecodeToBitString( $login_key );
 
-    $ticketLengthBits = strlen( $ticket_id_bits );
+    $ticketLengthBits = strlen( $login_key_bits );
 
 
     // generate enough bits by hashing shared secret repeatedly
@@ -708,13 +573,13 @@ function ts_getTicketID() {
     $hexToMixBits = substr( $hexToMixBits, 0, $ticketLengthBits );
 
     $mixBits = str_split( $hexToMixBits );
-    $ticketBits = str_split( $ticket_id_bits );
+    $ticketBits = str_split( $login_key_bits );
 
     // bitwise xor
     $i = 0;
     foreach( $mixBits as $bit ) {
         if( $bit == "1" ) {
-            if( $ticket_id_bits[$i] == "1" ) {
+            if( $login_key_bits[$i] == "1" ) {
                 
                 $ticketBits[$i] = "0";
                 }
@@ -725,12 +590,12 @@ function ts_getTicketID() {
         $i++;
         }
 
-    $ticket_id_bits = implode( $ticketBits );
+    $login_key_bits = implode( $ticketBits );
 
-    $encrypted_ticket_id =
-        ts_readableBase32EncodeFromBitString( $ticket_id_bits );
+    $encrypted_login_key =
+        ts_readableBase32EncodeFromBitString( $login_key_bits );
 
-    echo "$encrypted_ticket_id";
+    echo "$encrypted_login_key";
     }
 
 
@@ -738,26 +603,22 @@ function ts_getTicketID() {
 function ts_checkTicketHash() {
     global $tableNamePrefix;
 
-    $email = ts_requestFilter( "email", "/[A-Z0-9._%+-]+@[A-Z0-9.-]+/i" );
+    $email = ts_requestFilter( "email", "/[A-Z0-9._%+\-]+/i" );
 
-    if( ! ts_checkForSteamEmail( $email ) ) {
-        echo "INVALID";
-        return;        
-        }
     
     
-    $query = "SELECT ticket_id FROM $tableNamePrefix"."tickets ".
+    $query = "SELECT login_key FROM $tableNamePrefix"."tickets ".
         "WHERE email = '$email' AND blocked = '0';";
     $result = ts_queryDatabase( $query );
 
     $numRows = mysqli_num_rows( $result );
 
-    $ticket_id = "";
+    $login_key = "";
     
     // could be more than one with this email
     // return first only
     if( $numRows > 0 ) {
-        $ticket_id = ts_mysqli_result( $result, 0, "ticket_id" );
+        $login_key = ts_mysqli_result( $result, 0, "login_key" );
         }
     else {
         ts_log( "email $email not found on check_ticket_hash" );
@@ -766,7 +627,7 @@ function ts_checkTicketHash() {
         }
 
     // remove hyphens
-    $ticket_id = implode( preg_split( "/-/", $ticket_id ) );
+    $login_key = implode( preg_split( "/-/", $login_key ) );
     
 
     $hash_value = ts_requestFilter( "hash_value", "/[A-F0-9]+/i", "" );
@@ -778,7 +639,7 @@ function ts_checkTicketHash() {
 
 
     $computedHashValue =
-        strtoupper( ts_hmac_sha1( $ticket_id, $string_to_hash ) );
+        strtoupper( ts_hmac_sha1( $login_key, $string_to_hash ) );
     
 
     if( $computedHashValue == $hash_value ) {
@@ -799,63 +660,49 @@ function ts_editTicket() {
     global $tableNamePrefix, $remoteIP, $ts_mysqlLink;
 
 
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
+    $login_key = ts_requestFilter( "login_key", "/[A-HJ-NP-Z2-9\-]+/i" );
 
-    $ticket_id = strtoupper( $ticket_id );
+    $login_key = strtoupper( $login_key );
     
-    
-    $name = ts_requestFilter( "name", "/[A-Z0-9.' -]+/i" );
+    $email = ts_requestFilter( "email", "/[A-Z0-9._%+\-]+/i" );
 
-    // some names have ' in them
-    // need to escape this for use in DB query
-    $name = mysqli_real_escape_string( $ts_mysqlLink, $name );
-    
-    
-    $email = ts_requestFilter( "email", "/[A-Z0-9._%+-]+@[A-Z0-9.-]+/i" );
-
-    $order_number = ts_requestFilter( "reference", "/[A-Z0-9-]+/i" );
-
-    $tag = ts_requestFilter( "tag", "/[A-Z0-9_-]+/i" );
-
-    $email_opt_in = ts_requestFilter( "email_opt_in", "/[01]/", "1" );
-    
+    $new_key = ts_requestFilter( "key", "/[A-HJ-NP-Z2-9\-]+/i" );
 
 
     $query = "UPDATE $tableNamePrefix". "tickets SET " .
-        "name = '$name', email = '$email', ".
-        "order_number = '$order_number', tag = '$tag', " .
-        "email_opt_in = '$email_opt_in' " .
-        "WHERE ticket_id = '$ticket_id';";
+        "email = '$email', ".
+        "login_key = '$new_key' " .
+        "WHERE login_key = '$login_key';";
     
     global $ts_mysqlLink;
     
     $result = mysqli_query( $ts_mysqlLink, $query );
 
     if( $result ) {
-        ts_log( "$ticket_id data changed by $remoteIP" );
-        echo "Update of $ticket_id succeeded<br><br>";
+        ts_log( "$login_key data changed by $remoteIP" );
+        echo "Update of $login_key succeeded<br><br>";
 
         // don't check password again here
         ts_showDetail( false );
         }
     else {
-        ts_log( "$ticket_id data change failed for $remoteIP" );
+        ts_log( "$login_key data change failed for $remoteIP" );
 
-        echo "Update of $ticket_id failed";
+        echo "Update of $login_key failed";
         }
     }
 
 
 
 function ts_blockTicketID() {
-    ts_checkPassword( "block_ticket_id" );
+    ts_checkPassword( "block_login_key" );
 
 
     global $tableNamePrefix;
 
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
+    $login_key = ts_requestFilter( "login_key", "/[A-HJ-NP-Z2-9\-]+/i" );
 
-    $ticket_id = strtoupper( $ticket_id );
+    $login_key = strtoupper( $login_key );
     
 
     $blocked = ts_requestFilter( "blocked", "/[01]/", "0" );
@@ -867,7 +714,7 @@ function ts_blockTicketID() {
 
     
     $query = "SELECT * FROM $tableNamePrefix"."tickets ".
-        "WHERE ticket_id = '$ticket_id';";
+        "WHERE login_key = '$login_key';";
     $result = ts_queryDatabase( $query );
 
     $numRows = mysqli_num_rows( $result );
@@ -877,252 +724,52 @@ function ts_blockTicketID() {
         
         $query = "UPDATE $tableNamePrefix"."tickets SET " .
             "blocked = '$blocked' " .
-            "WHERE ticket_id = '$ticket_id';";
+            "WHERE login_key = '$login_key';";
         
         $result = ts_queryDatabase( $query );
 
         
-        ts_log( "$ticket_id block changed to $blocked by $remoteIP" );
+        ts_log( "$login_key block changed to $blocked by $remoteIP" );
 
         ts_showData();
         }
     else {
-        ts_log( "$ticket_id not found for $remoteIP" );
+        ts_log( "$login_key not found for $remoteIP" );
 
-        echo "$ticket_id not found";
+        echo "$login_key not found";
         }    
     }
 
 
 
 function ts_deleteTicketID() {
-    ts_checkPassword( "delete_ticket_id" );
+    ts_checkPassword( "delete_login_key" );
 
     global $tableNamePrefix, $remoteIP;
 
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
+    $login_key = ts_requestFilter( "login_key", "/[A-HJ-NP-Z2-9\-]+/i" );
 
-    $ticket_id = strtoupper( $ticket_id );
+    $login_key = strtoupper( $login_key );
     
 
     $query = "DELETE FROM $tableNamePrefix"."tickets ".
-        "WHERE ticket_id = '$ticket_id';";
+        "WHERE login_key = '$login_key';";
     $result = ts_queryDatabase( $query );
     
     if( $result ) {
-        ts_log( "$ticket_id deleted by $remoteIP" );
+        ts_log( "$login_key deleted by $remoteIP" );
 
-        echo "$ticket_id deleted.<hr>";
+        echo "$login_key deleted.<hr>";
 
         // don't check password again here
         ts_showData( false );
         }
     else {
-        ts_log( "$ticket_id delete failed for $remoteIP" );
+        ts_log( "$login_key delete failed for $remoteIP" );
 
         echo "DELETE operation failed?";
         }
     }
-
-
-
-function ts_bulkEmailOptOut() {
-    ts_checkPassword( "bulk_email_opt_out" );
-
-    global $tableNamePrefix, $remoteIP, $ts_mysqlLink;
-
-    // input filtering handled below
-    $emails = "";
-    if( isset( $_REQUEST[ "emails" ] ) ) {
-        $emails = $_REQUEST[ "emails" ];
-        }
-    
-    $emailArray = preg_split( "/\s+/", $emails );
-
-
-    $totalCount = count( $emailArray );
-    ts_log( "$totalCount opt-out initiated by $remoteIP" );
-
-
-    $failedCount = 0;
-    $alreadyOutCount = 0;
-    $successCount = 0;
-    foreach( $emailArray as $email ) {        
-        $unfilteredEmail = $email;
-        $email = ts_filter( $email, "/[A-Z0-9._%+-]+@[A-Z0-9.-]+/i", "" );
-
-        if( $email == "" ) {
-            echo "Invalid email address: $unfilteredEmail<br>";
-            $failedCount++;
-            }
-        else {
-            $email = strtolower( $email );
-
-            $query = "SELECT COUNT(*) FROM $tableNamePrefix"."tickets ".
-                "WHERE email = '$email';";
-            
-            $result = ts_queryDatabase( $query );
-
-            $countMatching = ts_mysqli_result( $result, 0, 0 );
-
-            if( $countMatching > 0 ) {
-                
-            
-                $query = "UPDATE $tableNamePrefix"."tickets ".
-                    "SET email_opt_in=0 WHERE email = '$email';";
-
-                $result = ts_queryDatabase( $query );
-
-                $affected = mysqli_affected_rows( $ts_mysqlLink );
-
-                $successCount += $affected;
-
-                $alreadyOutCount += ( $countMatching - $affected );
-                }
-            else {
-                echo "Email $email not found<br>";
-                $failedCount++;
-                }
-            }
-        }
-
-    echo "Summary:  $failedCount Failed, ".
-        "$alreadyOutCount already opted-out, ".
-        "$successCount newly opted out";
-    echo "<hr>";
-    ts_showData( false );
-    }
-
-
-
-function ts_downloadAllowed() {
-
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
-    
-    $ticket_id = strtoupper( $ticket_id );    
-    
-    global $tableNamePrefix, $remoteIP;
-
-
-    global $header, $footer;
-
-
-    
-    $query = "SELECT * FROM $tableNamePrefix"."tickets ".
-        "WHERE ticket_id = '$ticket_id';";
-    $result = ts_queryDatabase( $query );
-
-    $numRows = mysqli_num_rows( $result );
-
-    if( $numRows == 1 ) {
-        
-        $row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
-
-        $blocked = $row[ "blocked" ];
-
-        $tag = $row[ "tag" ];
-
-        $email = $row[ "email" ];
-
-        if( ! ts_checkForSteamEmail( $email ) ) {
-            eval( $header );
-            echo "You no longer own the game on Steam";
-            eval( $footer );
-            return 0;
-            }
-
-
-        date_default_timezone_set( "America/New_York" );
-        
-
-        $currentTimestamp = time();
-
-        $allowedTimestamp;
-
-        $downloadReady = 1;
-        
-        
-        global $allowedDownloadDates;
-        
-        $allowedTimestamp = strtotime( $allowedDownloadDates[ $tag ] );
-
-
-        
-        if( $currentTimestamp < $allowedTimestamp ) {
-
-            eval( $header );
-            
-            $allowedDateString = date( "l, F j, Y", $allowedTimestamp );
-            echo "Your download will be available on ".
-                "<b>$allowedDateString</b> (New York Time)<br>\n";
-
-            $d = $allowedTimestamp - $currentTimestamp;
-
-            $hours = (int)( $d / 3600 );
-
-            $seconds = (int)( $d % 3600 );
-            $minutes = (int)( $seconds / 60 );
-            $seconds = (int)( $seconds % 60 );
-            
-            $days = (int)( $hours / 24 );
-            $hours = (int)( $hours % 24 );
-            
-
-            echo "(That's in $days days, $hours hours, ".
-                "$minutes minutes, and $seconds seconds)<br>\n";
-
-            $currentDateString = date( "l, F j, Y [g:i a]",
-                                       $currentTimestamp );
-
-            echo "Current New York time: $currentDateString<br>\n";
-
-            eval( $footer );
-            
-            $downloadReady = 0;
-            }
-        
-            
-        
-        // format as in    Sunday, July 7, 2005 [4:52 pm]
-        //$dateString = date( "l, F j, Y [g:i a]", $timestamp );
-
-        if( !$blocked ){
-            $blocked = !$downloadReady;
-            }
-
-        if( !$blocked ) {
-            
-            ts_log( "$ticket_id permitted to download by $remoteIP" );
-            
-            return 1;
-            }
-        else {
-            
-            if( $downloadReady ) {
-                eval( $header );
-                echo "Your download access is currently blocked";
-                eval( $footer );
-
-                ts_log( "$ticket_id denied to download by ".
-                        "$remoteIP (blocked)" );
-                }
-            else {
-                ts_log( "$ticket_id denied to download by ".
-                        "$remoteIP (too early)" );
-                }
-            
-            return 0;
-            }
-        }
-    eval( $header );
-    echo "Your ticket number was not found";
-    eval( $footer );
-    
-    ts_log( "$ticket_id denied to download by $remoteIP (not found)" );
-
-    return 0;
-    }
-
 
 function ts_printLink( $inFileName, $inTicketID ) {
     global $useRemoteMirrors, $remoteMirrorURLFile;
@@ -1154,7 +801,7 @@ function ts_printLink( $inFileName, $inTicketID ) {
     
     // default:  server directly through our script
 
-    echo "<a href=\"server.php?action=download&ticket_id=$inTicketID&" .
+    echo "<a href=\"server.php?action=download&login_key=$inTicketID&" .
         "file_name=$inFileName\">$inFileName</a>";
     }
 
@@ -1162,15 +809,15 @@ function ts_printLink( $inFileName, $inTicketID ) {
 
 function ts_checkTicket() {
     
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
+    $login_key= ts_requestFilter( "login_key", "/[A-HJ-NP-Z2-9\-]+/i" );
     
-    $ticket_id = strtoupper( $ticket_id );    
+    $login_key= strtoupper( $login_key);    
     
     global $tableNamePrefix;
 
     
     $query = "SELECT COUNT(*) FROM $tableNamePrefix"."tickets ".
-        "WHERE ticket_id = '$ticket_id' AND blocked = 0;";
+        "WHERE login_key = '$login_key' AND blocked = 0;";
     $result = ts_queryDatabase( $query );
 
     $countMatching = ts_mysqli_result( $result, 0, 0 );
@@ -1187,16 +834,16 @@ function ts_checkTicket() {
 
 function ts_getTicketEmail() {
     
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
+    $login_key= ts_requestFilter( "login_key", "/[A-HJ-NP-Z2-9\-]+/i" );
     
-    $ticket_id = strtoupper( $ticket_id );    
+    $login_key= strtoupper( $login_key);    
     
     global $tableNamePrefix;
 
 
     
     $query = "SELECT email FROM $tableNamePrefix"."tickets ".
-        "WHERE ticket_id = '$ticket_id' AND blocked = 0;";
+        "WHERE login_key= '$login_key' AND blocked = 0;";
     $result = ts_queryDatabase( $query );
 
     if( mysqli_num_rows( $result ) == 1 ) {
@@ -1210,341 +857,6 @@ function ts_getTicketEmail() {
         }
     }
 
-
-
-function ts_showDownloads() {
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
-
-    $ticket_id = strtoupper( $ticket_id );    
-    
-    global $tableNamePrefix, $remoteIP;
-
-    
-    if( ts_downloadAllowed() ) {
-        global $fileList, $fileDescriptions, $fileListHeader, $footer;
-
-        $coupon_code = "";
-        
-        
-        $query = "SELECT email, coupon_code from $tableNamePrefix"."tickets ".
-            "WHERE ticket_id = '$ticket_id';";
-
-        $result = ts_queryDatabase( $query );
-    
-        $row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
-        
-        $email = $row[ "email" ];
-        $coupon_code = $row[ "coupon_code" ];
-
-        
-    
-
-        eval( $fileListHeader );
-        
-        echo "<center><table border=1 cellpadding=4>";
-        
-        for( $i=0; $i<count( $fileList ); $i++ ) {
-            echo "<tr><td>";
-            ts_printLink( $fileList[$i], $ticket_id );
-            echo "</td>";
-            $des = $fileDescriptions[$i];
-            echo "<td>$des</td></tr>";
-            }
-        echo "</table></center>";
-
-
-
-        // show opt in or opt out link?
-        $query = "SELECT * FROM $tableNamePrefix"."tickets ".
-            "WHERE ticket_id = '$ticket_id';";
-        $result = ts_queryDatabase( $query );
-
-        $numRows = mysqli_num_rows( $result );
-
-        if( $numRows == 1 ) {
-        
-            $row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
-
-            $email_opt_in = $row[ "email_opt_in" ];
-
-            echo "<br><br>";
-            
-            if( $email_opt_in == '1' ) {
-                echo "[<a href=\"server.php?action=email_opt_in&in=0&".
-                    "ticket_id=$ticket_id\">Opt Out</a>] of email updates.";
-                }
-            else {
-                echo "[<a href=\"server.php?action=email_opt_in&in=1&".
-                    "ticket_id=$ticket_id\">Opt In</a>] to email updates.";
-                }
-
-            global $canEditEmail;
-            
-            if( $canEditEmail ) {
-
-                echo " -- [<a href=\"server.php?action=edit_email&".
-                    "ticket_id=$ticket_id\">Change</a>] your email address.";
-                }
-            }
-        
-        
-        eval( $footer );
-        }
-    }
-
-
-
-
-function ts_download() {
-    global $ts_mysqlLink;
-    
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
-    
-    $ticket_id = strtoupper( $ticket_id );    
-
-    $file_name = ts_requestFilter( "file_name", "/[A-Z0-9_.-]+/i" );
-
-    
-    global $tableNamePrefix, $remoteIP;
-
-    
-        
-    $blocked = ! ts_downloadAllowed();
-    
-
-    
-    
-    $query = "SELECT * FROM $tableNamePrefix"."tickets ".
-        "WHERE ticket_id = '$ticket_id';";
-    $result = ts_queryDatabase( $query );
-
-    $numRows = mysqli_num_rows( $result );
-
-    if( $numRows == 1 ) {
-        
-        $row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
-
-
-        // catalog blocked runs, too
-        $download_count = $row[ "download_count" ];
-        
-        $download_count ++;
-        
-        
-        $query = "UPDATE $tableNamePrefix"."tickets SET " .
-            "last_download_date = CURRENT_TIMESTAMP, " .
-            "download_count = '$download_count' " .
-            "WHERE ticket_id = '$ticket_id';";
-            
-
-        $result = ts_queryDatabase( $query );
-        
-        
-        $query = "INSERT INTO $tableNamePrefix". "downloads VALUES ( " .
-            "'$ticket_id', CURRENT_TIMESTAMP, '$file_name', ".
-            "'$blocked', '$remoteIP' );";
-        
-        $result = mysqli_query( $ts_mysqlLink, $query );
-
-        
-        if( !$blocked ) {
-            global $downloadFilePath;
-            
-            $result = ts_send_file( $downloadFilePath . $file_name );
-
-            if( ! $result ) {
-                global $header, $footer;
-
-                eval( $header );
-                
-                echo "File not found.";
-                
-                eval( $footer );
-                }
-            
-            return;
-            }
-        else {
-            return;
-            }
-        }
-    }
-
-
-
-
-function ts_emailOptIn() {
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
-    
-    $ticket_id = strtoupper( $ticket_id );    
-
-    $in = ts_requestFilter( "in", "/[01]/", "1" );
-    
-    
-    global $tableNamePrefix, $remoteIP;
-
-    
-    if( ts_downloadAllowed() ) {
-        global $header, $footer;
-
-
-        eval( $header );
-
-
-        $query = "UPDATE $tableNamePrefix"."tickets ".
-            "SET email_opt_in='$in' WHERE ticket_id = '$ticket_id';";
-
-        $result = ts_queryDatabase( $query );
-
-        echo "Email updates for your download ticket are currently ";
-
-        if( $in == 1 ) {
-            echo "<b>on</b><br><br>\n";
-            }
-        else {
-            echo "<b>off</b><br><br>\n";
-            }
-        
-
-        // show opt in or opt out link?
-        $query = "SELECT * FROM $tableNamePrefix"."tickets ".
-            "WHERE ticket_id = '$ticket_id';";
-        $result = ts_queryDatabase( $query );
-
-        $numRows = mysqli_num_rows( $result );
-
-        if( $numRows == 1 ) {
-        
-            $row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
-
-            $email_opt_in = $row[ "email_opt_in" ];
-
-            
-            
-            if( $email_opt_in == '1' ) {
-                echo "[<a href=\"server.php?action=email_opt_in&in=0&".
-                    "ticket_id=$ticket_id\">Opt Out</a>] of email updates.";
-                }
-            else {
-                echo "[<a href=\"server.php?action=email_opt_in&in=1&".
-                    "ticket_id=$ticket_id\">Opt In</a>] to email updates.";
-                }
-            }
-
-        echo "<br><br>";
-        
-        echo "[<a href=\"server.php?action=show_downloads&".
-            "ticket_id=$ticket_id\">Return</a>] to your download page.";
-        
-        eval( $footer );
-        }
-    }
-
-
-
-function ts_editEmail() {
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
-    
-    $ticket_id = strtoupper( $ticket_id );    
-    
-    global $tableNamePrefix, $remoteIP;
-
-    
-    if( ts_downloadAllowed() ) {
-        global $header, $footer;
-
-
-        global $canEditEmail;
-
-        if( ! $canEditEmail ) {
-            
-            eval( $header );
-            
-            echo "Operation disabled.";
-            
-            eval( $footer );
-            
-            return;
-            }
-        
-        
-
-        $query = "SELECT email from $tableNamePrefix"."tickets ".
-            "WHERE ticket_id = '$ticket_id';";
-
-        $result = ts_queryDatabase( $query );
-    
-        $row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
-        
-        $email = $row[ "email" ];
-
-        
-        eval( $header );
-
-?>
-        <center><br>
-        <font size=6>Edit Email:</font><br><br>
-        <FORM ACTION="server.php" METHOD="post">
-        <INPUT TYPE="hidden" NAME="action" VALUE="change_email">
-        <INPUT TYPE="hidden" NAME="ticket_id" VALUE="<?php echo $ticket_id;?>">
-        <INPUT TYPE="text" MAXLENGTH=40 SIZE=20 NAME="email"
-             VALUE="<?php echo $email;?>">
-        <INPUT TYPE="Submit" VALUE="Update">
-        </FORM>
-        </center>
-<?php
-
-        echo "<br><br>";
-        
-        echo "[<a href=\"server.php?action=show_downloads&".
-            "ticket_id=$ticket_id\">Return</a>] to your download page.";
-        
-        eval( $footer );
-        }
-    }
-
-
-
-
-function ts_changeEmail() {
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
-    $email = ts_requestFilter( "email", "/[A-Z0-9._%+-]+@[A-Z0-9.-]+/i" );
-
-    $ticket_id = strtoupper( $ticket_id );    
-
-    global $tableNamePrefix;
-
-    
-    if( ts_downloadAllowed() ) {
-
-        global $canEditEmail;
-
-        if( ! $canEditEmail ) {
-            global $header, $footer;
-            
-            eval( $header );
-            
-            echo "Operation disabled.";
-            
-            eval( $footer );
-
-            return;
-            }
-        
-
-        $query = "UPDATE $tableNamePrefix"."tickets ".
-            "SET email='$email' WHERE ticket_id = '$ticket_id';";
-
-        $result = ts_queryDatabase( $query );
-
-        ts_log( "Email changed to $email for ticket $ticket_id" );
-        
-        ts_showDownloads();
-        }
-    }
-
-
-
 function ts_logout() {
     ts_checkReferrer();
     
@@ -1552,70 +864,6 @@ function ts_logout() {
 
     echo "Logged out";
     }
-
-
-
-
-// if email is a steamID alias, check if the user still owns the app
-// returns true on ownership, or if it's a non-steamID email
-// returns false for steamID emails that do not own the game
-function ts_checkForSteamEmail( $inEmail ) {
-    $matched = preg_match( "#(\d+)@steamgames.com#", $inEmail, $matches );
-
-    if( $matched ) {
-        $resultID = ts_doesSteamUserOwnApp( $matches[1] );
-
-        if( $resultID == $matches[1] ) {
-            return true;
-            }
-        return false;
-        }
-    else {
-        // non-steam email
-        return true;
-        }
-    }
-
-
-
-// Checks ownership of $steamAppID (from settings.php)
-// returns the steamID of the true owner if they have access to it (may be
-// ID of family member)
-// returns 0 if they don't own it at all.
-function ts_doesSteamUserOwnApp( $inSteamID ) {
-    global $steamAppID, $steamWebAPIKey;
-    
-    $url = "https://partner.steam-api.com/ISteamUser/CheckAppOwnership/V0001".
-        "?format=xml".
-        "&key=$steamWebAPIKey".
-        "&steamid=$inSteamID".
-        "&appid=$steamAppID";
-
-    $result = file_get_contents( $url );
-
-    
-    $matched = preg_match( "#<ownsapp>(\w+)</ownsapp>#",
-                           $result, $matches );
-
-    if( $matched && $matches[1] == "true" ) {
-
-        // make sure we return the true owner
-        $matchedB = preg_match( "#<ownersteamid>(\d+)</ownersteamid>#",
-                                $result, $matchesB );
-
-        if( $matchedB ) {
-            return $matchesB[1];
-            }
-        else {
-            return 0;
-            }
-        }
-    else {
-        return 0;
-        }
-    }
-
-
 
 
 function ts_showData( $checkPassword = true ) {
@@ -1646,7 +894,7 @@ function ts_showData( $checkPassword = true ) {
     $search = ts_requestFilter( "search", "/[A-Z0-9_@. -]+/i" );
 
     $order_by = ts_requestFilter( "order_by", "/[A-Z_]+/i",
-                                  "last_download_date" );
+                                  "key_id" );
     
     $keywordClause = "";
     $searchDisplay = "";
@@ -1654,12 +902,8 @@ function ts_showData( $checkPassword = true ) {
     if( $search != "" ) {
         
 
-        $keywordClause = "WHERE ( name LIKE '%$search%' " .
-            "OR email LIKE '%$search%' ".
-            "OR ticket_id LIKE '%$search%' ".
-            "OR coupon_code LIKE '%$search%' ".
-            "OR order_number LIKE '%$search%' ".
-            "OR tag LIKE '%$search%' ) ";
+        $keywordClause = "WHERE ( email LIKE '%$search%' " .
+            "OR login_key LIKE '%$search%' ) ";
 
         $searchDisplay = " matching <b>$search</b>";
         }
@@ -1676,7 +920,7 @@ function ts_showData( $checkPassword = true ) {
 
     $orderDir = "DESC";
 
-    if( $order_by == "name" || $order_by == "email" ) {
+    if( $order_by == "email" ) {
         $orderDir = "ASC";
         }
     
@@ -1751,70 +995,43 @@ function ts_showData( $checkPassword = true ) {
 
     
     echo "<tr>\n";    
-    echo "<tr><td>Ticket ID</td>\n";
-    echo "<td>".orderLink( "name", "Name" )."</td>\n";
-    echo "<td>".orderLink( "email", "Email" )."</td>\n";
-    echo "<td>Sent?</td>\n";
-    echo "<td>Blocked?</td>\n";
-    echo "<td>Coupon</td>\n";
-    echo "<td>".orderLink( "sale_date", "Created" )."</td>\n";
-    echo "<td>Test</td>\n";
-    echo "<td>".orderLink( "last_download_date", "Last DL" )."</td>\n";
-    echo "<td>".orderLink( "download_count", "DL Count" )."</td>\n";
+    echo "<tr><td>".orderLink( "email", "Email" )."</td>\n";
+	echo "<td>Login Key</td>\n";
+    echo "<td>".orderLink( "creation_date", "Created" )."</td>\n";
+    echo "<td>Blocked</td>\n";
     echo "</tr>\n";
 
 
     for( $i=0; $i<$numRows; $i++ ) {
-        $ticket_id = ts_mysqli_result( $result, $i, "ticket_id" );
-        $sale_date = ts_mysqli_result( $result, $i, "sale_date" );
-        $lastDL = ts_mysqli_result( $result, $i, "last_download_date" );
-        $count = ts_mysqli_result( $result, $i, "download_count" );
-        $name = ts_mysqli_result( $result, $i, "name" );
+        $login_key= ts_mysqli_result( $result, $i, "login_key" );
+        $creation_date = ts_mysqli_result( $result, $i, "creation_date" );
         $email = ts_mysqli_result( $result, $i, "email" );
-        $tag = ts_mysqli_result( $result, $i, "tag" );
-        $coupon_code = ts_mysqli_result( $result, $i, "coupon_code" );
         $blocked = ts_mysqli_result( $result, $i, "blocked" );
-        $sent = ts_mysqli_result( $result, $i, "email_sent" );
 
         $block_toggle = "";
         
         if( $blocked ) {
             $blocked = "BLOCKED";
-            $block_toggle = "<a href=\"server.php?action=block_ticket_id&".
-                "blocked=0&ticket_id=$ticket_id\">unblock</a>";
+            $block_toggle = "<a href=\"server.php?action=block_login_key&".
+                "blocked=0&login_key=$login_key\">unblock</a>";
             
             }
         else {
             $blocked = "";
-            $block_toggle = "<a href=\"server.php?action=block_ticket_id&".
-                "blocked=1&ticket_id=$ticket_id\">block</a>";
+            $block_toggle = "<a href=\"server.php?action=block_login_key&".
+                "blocked=1&login_key=$login_key\">block</a>";
             
-            }
-
-        $sent_toggle = "";
-
-        if( $sent ) {
-            $sent_toggle = "X";
             }
         
 
         
         echo "<tr>\n";
-        
-        echo "<td><b>$ticket_id</b> ($tag) ";
+        echo "<td>$email</td>\n";       
+        echo "<td><b>$login_key</b>";
         echo "[<a href=\"server.php?action=show_detail" .
-            "&ticket_id=$ticket_id\">detail</a>]</td>\n";
-        echo "<td>$name</td>\n";
-        echo "<td>$email</td>\n";
-        echo "<td align=center>$sent_toggle</td>\n";
-        echo "<td align=right>$blocked [$block_toggle]</td>\n";
-        echo "<td>$coupon_code</td>\n";
-        echo "<td>$sale_date</td> ";
-        echo "<td>[<a href=\"server.php?action=show_downloads".
-            "&ticket_id=$ticket_id\">run test</a>]</td>";
-        echo "<td>$lastDL</td>";
-        echo "<td>$count DLs</td>";
-        
+            "&login_key=$login_key\">detail</a>]</td>\n";
+        echo "<td>$creation_date</td> ";
+        echo "<td align=right>$blocked [$block_toggle]</td>\n";      
         echo "</tr>\n";
         }
     echo "</table>";
@@ -1823,245 +1040,30 @@ function ts_showData( $checkPassword = true ) {
     echo "<hr>";
 
         // put forms in a table
-    echo "<center><table border=1 cellpadding=10><tr>\n";
-    
-
-
-    // fake a security hashes to include in form
-    global $fastspringPrivateKeys;
-    
-    $data = "abc";
-
-    
-    // form for force-creating a new id
 ?>
-        <td>
-        Create new Ticket:<br>
-            <FORM ACTION="server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="security_data" VALUE="<?php echo $data;?>">
-    <INPUT TYPE="hidden" NAME="action" VALUE="sell_ticket">
-    <INPUT TYPE="hidden" NAME="manual" VALUE="1">
-             Email:
-    <INPUT TYPE="text" MAXLENGTH=80 SIZE=20 NAME="email"><br>
-    Name:
-    <INPUT TYPE="text" MAXLENGTH=80 SIZE=20 NAME="name"><br>
-    Order #:
-    <INPUT TYPE="text" MAXLENGTH=40 SIZE=20 NAME="reference"><br>
-    Tag:
-    <SELECT NAME="tags">
-<?php
-
-    // auto-gen a drop-down list of available tags
-    global $allowedDownloadDates;
-    
-    foreach( $allowedDownloadDates as $tag => $date ){
-        echo "<OPTION VALUE=\"$tag\">$tag</OPTION>";
-        }
-?>
-    </SELECT><br>
-    Fake security hash:
-    <SELECT NAME="security_hash">
-<?php
-
-    // auto-gen a drop-down list of hashes for available tags
-    global $allowedDownloadDates;
-
-    foreach( $allowedDownloadDates as $tag => $date ){
-        $string_to_hash = $data . $fastspringPrivateKeys[$tag];
-        
-        $hash = md5( $string_to_hash );
-
-        echo "<OPTION VALUE=\"$hash\">$tag</OPTION>";
-        }
-?>
-    </SELECT><br>
-
-    <INPUT TYPE="checkbox" NAME="email_opt_in" VALUE=0>
-          Force email opt-out<br>
-          
-    <INPUT TYPE="Submit" VALUE="Generate">
-    </FORM>
-        </td>
-<?php
-
-
-
-
-
-    // form for force-creating a bunch of new ids in bulk
-?>
-        <td>
-        Create Multiple Tickets:<br>
-            <FORM ACTION="server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="security_data" VALUE="<?php echo $data;?>">
-    <INPUT TYPE="hidden" NAME="action" VALUE="sell_ticket">
-    <INPUT TYPE="hidden" NAME="manual" VALUE="1">
-    <INPUT TYPE="hidden" NAME="bulk" VALUE="1">
-    <INPUT TYPE="hidden" NAME="name_from_email" VALUE="1">      
-
-          Emails (one per line):<br>
-             <TEXTAREA NAME="emails" COLS=40 ROWS=10></TEXTAREA><br>
-    Order #:
-    <INPUT TYPE="text" MAXLENGTH=40 SIZE=20 NAME="reference"><br>
-    Tag:
-    <SELECT NAME="tags">
-<?php
-
-    // auto-gen a drop-down list of available tags
-    global $allowedDownloadDates;
-    
-    foreach( $allowedDownloadDates as $tag => $date ){
-        echo "<OPTION VALUE=\"$tag\">$tag</OPTION>";
-        }
-?>
-    </SELECT><br>
-    Fake security hash:
-    <SELECT NAME="security_hash">
-<?php
-
-    // auto-gen a drop-down list of hashes for available tags
-    global $allowedDownloadDates;
-
-    foreach( $allowedDownloadDates as $tag => $date ){
-        $string_to_hash = $data . $fastspringPrivateKeys[$tag];
-        
-        $hash = md5( $string_to_hash );
-
-        echo "<OPTION VALUE=\"$hash\">$tag</OPTION>";
-        }
-?>
-    </SELECT><br>
-
-    <INPUT TYPE="checkbox" NAME="email_opt_in" VALUE=0>
-          Force email opt-out<br>
-          
-    <INPUT TYPE="Submit" VALUE="Generate">
-    </FORM>
-        </td>
-<?php
-
-          
-
-
-          
-
-
-    // form for sending out download emails
-?>
-        <td>
-        Send download emails:<br>
-            <FORM ACTION="server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="action" VALUE="send_group_email">
-    Tag:
-    <SELECT NAME="tag">
-<?php
-
-    // auto-gen a drop-down list of available tags
-    global $allowedDownloadDates;
-    
-    foreach( $allowedDownloadDates as $tag => $date ){
-        echo "<OPTION VALUE=\"$tag\">$tag</OPTION>";
-        }
-?>
-    </SELECT><br>
-    Batch size:<br>      
-    <INPUT TYPE="text" MAXLENGTH=10 SIZE=10 NAME="batch_size" VALUE="10"><br>
-    Order number filter:<br>      
-    <INPUT TYPE="text" MAXLENGTH=10 SIZE=10 NAME="order_number_filter" VALUE=""><br>
-    <INPUT TYPE="checkbox" NAME="confirm" VALUE=1> Confirm<br>      
-    <INPUT TYPE="Submit" VALUE="Send">
-    </FORM>
-        </td>
-<?php
-
-
-
-    // form for bulk opt-out
-?>
-        <td>
-        Mass email opt-out:<br><br>
-            <FORM ACTION="server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="action" VALUE="bulk_email_opt_out">
-             Emails (one per line):<br>
-             <TEXTAREA NAME="emails" COLS=30 ROWS=10></TEXTAREA><br>
-    <INPUT TYPE="Submit" VALUE="Opt-out">
-    </FORM>
-        </td>
-<?php
-
-
-          
-    echo "</tr></table></center>\n";
-
-    
-    
-    echo "<hr>";
-
-    // blank form
-    ts_printSendAllNoteForm( "", "" );
-?>
-    <hr>
-
-
-
-    <FORM ACTION="server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="action" VALUE="send_all_file_note">
-    Subject:
-    <INPUT TYPE="text" MAXLENGTH=80 SIZE=40 NAME="message_subject"><br>
-    File Downloaded:
-    <SELECT NAME="file_name">
-<?php
-
-    // auto-gen a drop-down list of files that have ever been downloaded
-    
-	$query = "SELECT DISTINCT file_name FROM $tableNamePrefix"."downloads;";
-    $result = ts_queryDatabase( $query );
-    
-    $numRows = mysqli_num_rows( $result );
-
-	for( $i=0; $i<$numRows; $i++ ) {
-        $file_name = ts_mysqli_result( $result, $i, "file_name" );
-        echo "<OPTION VALUE=\"$file_name\">$file_name</OPTION>";
-        }
-?>
-    </SELECT><br>
-     Message:<br>
-         <TEXTAREA NAME="message_text" COLS=50 ROWS=10></TEXTAREA><br>
-    <INPUT TYPE="checkbox" NAME="confirm" VALUE=1> Confirm<br>      
-    <INPUT TYPE="Submit" VALUE="Send">
-    </FORM>
-
-
-
-    <hr>
-
-
-
-
-    <FORM ACTION="server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="action" VALUE="add_coupon_codes">
-    Add coupon codes:<br>
-    (One per line,
-     each user that does not already have a coupon code gets one.)<br>
-
-         <TEXTAREA NAME="coupon_codes" COLS=50 ROWS=10></TEXTAREA><br>
-    <INPUT TYPE="checkbox" NAME="confirm" VALUE=1> Confirm<br>      
-    <INPUT TYPE="Submit" VALUE="Add">
-    </FORM>
-    <hr>
-
-
-
-    <FORM ACTION="server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="action" VALUE="clear_coupon_codes">
-    Remove coupon codes matching prefix:
-    <INPUT TYPE="text" MAXLENGTH=20 SIZE=10 NAME="coupon_prefix"><br>
-    <INPUT TYPE="checkbox" NAME="confirm" VALUE=1> Confirm<br>      
-    <INPUT TYPE="Submit" VALUE="Remove">
-    </FORM>
-    <hr>
-
-          
+<center>
+	<table border=1 cellpadding=10>
+		<tr>
+			<?php
+				// fake a security hashes to include in form
+				global $fastspringPrivateKeys;
+				$data = "abc";
+				// form for force-creating a new id
+			?>
+			<td>
+				Create new Ticket:<br>
+				<FORM ACTION="server.php" METHOD="post">
+					<INPUT TYPE="hidden" NAME="action" VALUE="sell_ticket">
+					<INPUT TYPE="hidden" NAME="manual" VALUE="1">
+					Email:
+					<INPUT TYPE="text" MAXLENGTH=80 SIZE=20 NAME="email"><br>
+						  
+					<INPUT TYPE="Submit" VALUE="Generate">
+				</FORM>
+			</td>
+		</tr>
+	</table>
+</center>  
 <?php
 
 
@@ -2087,27 +1089,16 @@ function ts_showDetail( $checkPassword = true ) {
     global $tableNamePrefix;
     
 
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
+    $login_key= ts_requestFilter( "login_key", "/[A-HJ-NP-Z2-9\-]+/i" );
 
-    $ticket_id = strtoupper( $ticket_id );
+    $login_key= strtoupper( $login_key);
 
 
     // form for sending out download emails
-?>
-        <hr>
-        Send download email:<br>
-            <FORM ACTION="server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="action" VALUE="send_single_email">
-    <INPUT TYPE="hidden" NAME="ticket_id" VALUE="<?php echo $ticket_id;?>">
-    <INPUT TYPE="checkbox" NAME="confirm" VALUE=1> Confirm<br>      
-    <INPUT TYPE="Submit" VALUE="Send">
-    </FORM>
-        <hr>
-<?php
 
             
     $query = "SELECT * FROM $tableNamePrefix"."tickets ".
-            "WHERE ticket_id = '$ticket_id';";
+            "WHERE login_key= '$login_key';";
     $result = ts_queryDatabase( $query );
     
     $numRows = mysqli_num_rows( $result );
@@ -2115,14 +1106,6 @@ function ts_showDetail( $checkPassword = true ) {
     $row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
 
     $email = $row[ "email" ];
-    $name = $row[ "name" ];
-    $order_number = $row[ "order_number" ];
-    $tag = $row[ "tag" ];
-    $email_opt_in = $row[ "email_opt_in" ];
-    $optOutChecked = "";
-    if( ! $email_opt_in ) {
-        $optOutChecked = "checked";
-        }
     
     // form for editing ticket data
 ?>
@@ -2130,842 +1113,21 @@ function ts_showDetail( $checkPassword = true ) {
         Edit ticket:<br>
             <FORM ACTION="server.php" METHOD="post">
     <INPUT TYPE="hidden" NAME="action" VALUE="edit_ticket">
-    <INPUT TYPE="hidden" NAME="ticket_id" VALUE="<?php echo $ticket_id;?>">
+    <INPUT TYPE="hidden" NAME="login_key" VALUE="<?php echo $login_key;?>">
     Email:
     <INPUT TYPE="text" MAXLENGTH=80 SIZE=20 NAME="email"
             VALUE="<?php echo $email;?>"><br>
-    Name:
-    <INPUT TYPE="text" MAXLENGTH=80 SIZE=20 NAME="name"
-            VALUE="<?php echo $name;?>"><br>
-    Order #:
-    <INPUT TYPE="text" MAXLENGTH=40 SIZE=40 NAME="reference"
-            VALUE="<?php echo $order_number;?>"><br>
-    Tag:
-    <INPUT TYPE="text" MAXLENGTH=40 SIZE=20 NAME="tag"
-            VALUE="<?php echo $tag;?>"><br>
-    <INPUT TYPE="checkbox" NAME="email_opt_in" VALUE="0"
-             <?php echo $optOutChecked;?> >
-          Email opt-out<br>
+    Key:
+    <INPUT TYPE="text" MAXLENGTH=80 SIZE=20 NAME="key"
+            VALUE="<?php echo ticketGeneration(); ?>"><br>
+
     <INPUT TYPE="Submit" VALUE="Update">
     </FORM>
         <hr>
 <?php
             
-    
-    
-    
-    $query = "SELECT * FROM $tableNamePrefix"."downloads ".
-        "WHERE ticket_id = '$ticket_id' ORDER BY download_date DESC;";
-    $result = ts_queryDatabase( $query );
-
-    $numRows = mysqli_num_rows( $result );
-
-    echo "$numRows downloads for $ticket_id:";
-
-    echo " [<a href=\"server.php?action=delete_ticket_id" .
-        "&ticket_id=$ticket_id\">DELETE this id</a>]";
-    
-    echo "<br><br><br>\n";
-        
-
-    for( $i=0; $i<$numRows; $i++ ) {
-        $date = ts_mysqli_result( $result, $i, "download_date" );
-        $ipAddress = ts_mysqli_result( $result, $i, "ip_address" );
-        $file_name = ts_mysqli_result( $result, $i, "file_name" );
-
-        $blocked = ts_mysqli_result( $result, $i, "blocked" );
-
-        if( $blocked ) {
-            $blocked = "BLOCKED";
-            }
-        else {
-            $blocked = "";
-            }
-        
-        echo "<b>$date</b>: $ipAddress ($file_name) $blocked<hr>\n";
-        }
     }
 
-
-
-function ts_sendGroupEmail() {
-    ts_checkPassword( "send_group_email" );
-
-    
-    echo "[<a href=\"server.php?action=show_data" .
-         "\">Main</a>]<br><br><br>";
-    
-    global $tableNamePrefix;
-
-    $confirm = ts_requestFilter( "confirm", "/[01]/" );
-    
-    
-
-    $batch_size = ts_requestFilter( "batch_size", "/[0-9]+/", 0 );
-    
-
-    $tag = ts_requestFilter( "tag", "/[A-Z0-9_-]+/i" );
-
-    $batchClause = "";
-    if( $batch_size > 0 ) {
-        $batchClause = " LIMIT 0, $batch_size ";
-        }
-    
-
-    $order_number_filter = ts_requestFilter( "order_number_filter",
-                                             "/[A-Z0-9-]+/i", "" );
-
-    $orderFilterClause = "";
-
-    if( $order_number_filter != "" ) {
-        $orderFilterClause = "AND order_number LIKE '%$order_number_filter%'";
-        }
-    
-
-    $query = "SELECT * FROM $tableNamePrefix"."tickets ".
-        "WHERE tag = '$tag' AND email_sent = '0' AND blocked = '0' ".
-        " $orderFilterClause ".
-        "ORDER BY sale_date ASC $batchClause;";
-
-    
-    if( $confirm != 1 ) {
-        echo "You must check the Confirm box to send emails<br><br>";
-
-        $result = ts_queryDatabase( $query );
-
-        $numRows = mysqli_num_rows( $result );
-
-        echo "Would have sent emails to these $numRows people:<br><br>";
-
-        echo "<table border=1 cellspacing=0 cellpadding=10>\n";
-        
-        for( $i=0; $i<$numRows; $i++ ) {
-            $email = ts_mysqli_result( $result, $i, "email" );
-            $tag = ts_mysqli_result( $result, $i, "tag" );
-            $order_number = ts_mysqli_result( $result, $i, "order_number" );
-
-            echo
-                "<tr><td>$email</td><td>$order_number</td><td>$tag</td></tr>\n";
-            }
-        echo "</table>\n";
-        
-        return;
-        }
-
-
-    
-    ts_sendEmail_q( $query );
-    }
-
-
-
-function ts_sendSingleEmail() {
-    ts_checkPassword( "send_group_email" );
-
-    
-    echo "[<a href=\"server.php?action=show_data" .
-         "\">Main</a>]<br><br><br>";
-    
-    global $tableNamePrefix;
- 
-    $confirm = ts_requestFilter( "confirm", "/[01]/" );
-    
-    if( $confirm != 1 ) {
-        echo "You must check the Confirm box to send emails\n";
-        return;
-        }
-
-    $ticket_id = ts_requestFilter( "ticket_id", "/[A-HJ-NP-Z2-9\-]+/i" );
-
-    $ticket_id = strtoupper( $ticket_id );
-
-    $query = "SELECT * FROM $tableNamePrefix"."tickets ".
-        "WHERE ticket_id = '$ticket_id';";
-    ts_sendEmail_q( $query );
-    }
-
-
-
-// sends download emails for every result in a SQL query
-function ts_sendEmail_q( $inQuery ) {
-    global $tableNamePrefix;
-    
-    $result = ts_queryDatabase( $inQuery );
-    
-    $numRows = mysqli_num_rows( $result );
-
-    echo "Based on query, sending $numRows emails:<br><br><br>\n";
-
-    for( $i=0; $i<$numRows; $i++ ) {
-        $ticket_id = ts_mysqli_result( $result, $i, "ticket_id" );
-        $name = ts_mysqli_result( $result, $i, "name" );
-        $email = ts_mysqli_result( $result, $i, "email" );
-
-        echo "[$i] Sending email to $email for ticket $ticket_id ... ";
-        
-        $emailResult = ts_sendEmail_p( $ticket_id, $name, $email );
-
-        if( $emailResult ) {
-            echo "SUCCESS";
-
-            $queryB = "UPDATE $tableNamePrefix"."tickets SET " .
-                "email_sent = '1' " .
-                "WHERE ticket_id = '$ticket_id';";
-        
-            $resultB = ts_queryDatabase( $queryB );
-            }
-        else {
-            echo "FAILURE";
-            }
-        echo "<br><br>\n";
-        flush();
-        }
-    }
-
-
-
-// sends a download email for a ticket
-function ts_sendEmail( $inTickeID ) {
-
-    global $tableNamePrefix;
-    
-    $query = "SELECT * FROM $tableNamePrefix"."tickets ".
-        "WHERE ticket_id = '$ticket_id';";
-    $result = ts_queryDatabase( $query );
-
-    $numRows = mysqli_num_rows( $result );
-
-    if( $numRows == 1 ) {
-        
-        $row = mysqli_fetch_array( $result, MYSQLI_ASSOC );
-
-        $email = $row[ "email" ];
-        $name = $row[ "name" ];
-
-        return ts_sendEmail_p( $inTickeID, $name, $email );
-        }
-    return 0;
-    }
-
-
-
-// sends a download email for a ticket
-function ts_sendEmail_p( $inTickeID, $inName, $inEmail ) {
-        
-    
-    global $siteName, $fullServerURL, $mainSiteURL,
-           $extraEmailMessage;
-    
-    $downloadURL = $fullServerURL.
-        "?action=show_downloads&ticket_id=$inTickeID";
-
-    $mailSubject = "Your [$siteName] download is ready";
-    
-    $mailBody = "$inName:\n\n".
-        "$extraEmailMessage".
-        "Your can now access your download at:\n\n".
-        "  $downloadURL\n\n".
-        "You can also access your download manually by ".
-        "entering your ticket $inTickeID here:\n\n".
-        "  $mainSiteURL\n\n";
-    
-
-    /*
-    echo "\n<br>Sending mail to: $inEmail<br>\n";
-    echo "Subject: $mailSubject<br>\n";
-    echo "Headers: $mailHeaders<br>\n";
-    echo "Body: <br>\n<pre>$mailBody</pre><br>\n";
-    */
-    
-    $result = ts_mail( $inEmail,
-                       $mailSubject,
-                       $mailBody,
-                       // download code emails are transactional
-                       true );
-    return $result;
-    }
-
-
-function ts_printSendAllNoteForm( $inSetMessageSubject, $inSetMessageBody ) {
-    global $tableNamePrefix;
-?>
-    <FORM ACTION="server.php" METHOD="post">
-    <INPUT TYPE="hidden" NAME="action" VALUE="send_all_note">
-    Subject:
-    <INPUT TYPE="text" MAXLENGTH=80 SIZE=40 NAME="message_subject"
-          value="<?php echo $inSetMessageSubject;?>" ><br>
-    Tag:
-    <SELECT NAME="tag">
-<?php
-    
-
-
-
-    
-    $query = "SELECT COUNT(*) FROM $tableNamePrefix"."tickets ".
-         "WHERE blocked = '0' AND email_opt_in = '1';";
-    $result = ts_queryDatabase( $query );
-    
-
-    
-    global $useBulkEmailerForNotes;
-
-    if( $useBulkEmailerForNotes ) {
-        $totalTickets = ts_mysqli_result( $result, 0, 0 );
-
-        $numToSkip = 0;
-        global $bulkEmailBatchSize;
-    
-        while( $totalTickets > 0 ) {
-            echo "<OPTION VALUE=\"BULK_BATCH_$numToSkip\">".
-                "BULK_BATCH_$numToSkip</OPTION>";
-            $totalTickets -= $bulkEmailBatchSize;
-            $numToSkip += $bulkEmailBatchSize;
-            }
-        }
-
-
-
-    // auto-gen ALL tags for batches
-
-    $totalTickets = ts_mysqli_result( $result, 0, 0 );
-    $numToSkip = 0;
-    global $emailMaxBatchSize;
-    
-    while( $totalTickets > 0 ) {
-        echo "<OPTION VALUE=\"ALL_BATCH_$numToSkip\">".
-            "ALL_BATCH_$numToSkip</OPTION>";
-        $totalTickets -= $emailMaxBatchSize;
-        $numToSkip += $emailMaxBatchSize;
-        }
-    
-         
-    // auto-gen a drop-down list of available tags
-    global $allowedDownloadDates;
-    
-    foreach( $allowedDownloadDates as $tag => $date ){
-        echo "<OPTION VALUE=\"$tag\">$tag</OPTION>";
-        }
-
-    
-?>
-    </SELECT> Skip: <INPUT TYPE="text" MAXLENGTH=20 SIZE=10 NAME="message_skip"
-          value="0" ><br>
-     Message:<br>
-     (<b>#DOWNLOAD_LINK#</b> will be replaced with individual links)<br>
-     (<b>#DOWNLOAD_CODE#</b> will be replaced with individual DL codes)<br>
-     (<b>#COUPON_CODE#</b> will be replaced with individual coupon codes)<br>
-          <TEXTAREA NAME="message_text" COLS=50 ROWS=10><?php echo $inSetMessageBody;?></TEXTAREA><br>
-    <INPUT TYPE="checkbox" NAME="confirm" VALUE=1> Confirm<br>      
-    <INPUT TYPE="Submit" VALUE="Send">
-    </FORM>
-    <hr>
-<?php
-
-    }
-
-
-
-
-function ts_sendAllNote() {
-    ts_checkPassword( "send_all_note" );
-
-    
-    echo "[<a href=\"server.php?action=show_data" .
-         "\">Main</a>]<br><br><br>";
-    
-    global $tableNamePrefix;
-
-    $confirm = ts_requestFilter( "confirm", "/[01]/" );
-    
-    if( $confirm != 1 ) {
-        echo "You must check the Confirm box to send emails\n";
-        return;
-        }
-    
-
-    // pass subject and body through without regex filter
-    // these are put into emails and not put in the database
-    $message_subject = "";
-    if( isset( $_REQUEST[ "message_subject" ] ) ) {
-        $message_subject = $_REQUEST[ "message_subject" ];
-        }
-    
-
-    $message_text = "";
-    if( isset( $_REQUEST[ "message_text" ] ) ) {
-        $message_text = $_REQUEST[ "message_text" ];
-        }
-    
-    
-    $tag = ts_requestFilter( "tag", "/[A-Z0-9_-]+/i" );
-
-
-    
-    $query = "SELECT * FROM $tableNamePrefix"."tickets ".
-        "WHERE tag = '$tag' AND blocked = '0' AND email_opt_in = '1' ".
-        "ORDER BY sale_date ASC;";
-
-
-    $tagParts = preg_split( "/_/", $tag );
-
-    $useBulk = 0;
-    
-    if( count( $tagParts ) == 3 ) {
-        
-        if( ( $tagParts[0] == "ALL"  || $tagParts[0] == "BULK" ) &&
-            $tagParts[1] == "BATCH" ) {
-
-            // Only send one batch now, according to tag
-            $numToSkip = $tagParts[2];
-
-            $message_skip = ts_requestFilter( "message_skip", "/[0-9]+/i", 0 );
-            $numToSkip += $message_skip;
-            
-            global $emailMaxBatchSize;
-
-            $batchSize = $emailMaxBatchSize;
-
-            if( $tagParts[0] == "BULK" ) {
-                global $bulkEmailBatchSize;
-                $batchSize = $bulkEmailBatchSize;
-                $useBulk = 1;
-                }
-            
-            $query = "SELECT * FROM $tableNamePrefix"."tickets ".
-                "WHERE blocked = '0' AND email_opt_in = '1' ".
-                "ORDER BY sale_date ASC LIMIT $numToSkip, $batchSize;";
-            }
-        }
-    
-    
-    // show opt-out URL at bottom of email
-    ts_sendNote_q( $query, $message_subject, $message_text, 1, $useBulk );
-
-
-    // show resend form
-    echo "<hr>";
-
-    echo "<br><br>Done sending for tag <b>$tag</b>.<br>";
-    echo "Send another batch?<br><br>";
-
-    ts_printSendAllNoteForm( $message_subject, $message_text );
- 
-    }
-
-
-
-function ts_sendAllFileNote() {
-    ts_checkPassword( "send_all_note" );
-
-    
-    echo "[<a href=\"server.php?action=show_data" .
-         "\">Main</a>]<br><br><br>";
-    
-    global $tableNamePrefix;
-
-    $confirm = ts_requestFilter( "confirm", "/[01]/" );
-    
-    if( $confirm != 1 ) {
-        echo "You must check the Confirm box to send emails\n";
-        return;
-        }
-    
-
-    // don't regex filter subject and body (destined for emails, not DB)
-    $message_subject = "";
-    if( isset( $_REQUEST[ "message_subject" ] ) ) {
-        $message_subject = $_REQUEST[ "message_subject" ];
-        }
-    
-
-    $message_text = "";
-    if( isset( $_REQUEST[ "message_text" ] ) ) {
-        $message_text = $_REQUEST[ "message_text" ];
-        }
-    
-    
-
-    $file_name = ts_requestFilter( "file_name", "/[A-Z0-9_.-]+/i" );
-
-    	
-    $query = "SELECT DISTINCT email, name, ".
-        "$tableNamePrefix"."tickets.ticket_id, ".
-        "$tableNamePrefix"."tickets.coupon_code ".
-        "FROM $tableNamePrefix"."downloads ".
-        "LEFT JOIN $tableNamePrefix"."tickets ON ".
-        "$tableNamePrefix"."downloads.ticket_id = ".
-        "$tableNamePrefix"."tickets.ticket_id ".
-        "WHERE file_name='$file_name';";
-/*
-    $query = "SELECT * FROM $tableNamePrefix"."tickets ".
-        "WHERE tag = '$tag' AND blocked = '0' AND email_opt_in = '1';";
-*/
-    ts_sendNote_q( $query, $message_subject, $message_text, 0, 0 );
-    }
-
-
-
-
-function ts_addCouponCodes() {
-    ts_checkPassword( "add_coupon_codes" );
-
-    
-    echo "[<a href=\"server.php?action=show_data" .
-         "\">Main</a>]<br><br><br>";
-    
-    global $tableNamePrefix;
-
-    $confirm = ts_requestFilter( "confirm", "/[01]/" );
-    
-    if( $confirm != 1 ) {
-        echo "You must check the Confirm box to add coupons\n";
-        return;
-        }
-    
-
-    $coupon_codes = ts_requestFilter( "coupon_codes", "/[A-Z0-9 \n\r]+/" );
-
-    
-
-    $separateCodes = preg_split( "/\s+/", $coupon_codes );
-
-
-    $numCodes = count( $separateCodes );
-
-    echo "Adding <b>$numCodes</b> new coupon codes...<br>\n";
-    
-    
-    $query = "SELECT ticket_id, email FROM $tableNamePrefix"."tickets ".
-        "WHERE coupon_code = '' LIMIT $numCodes;";
-
-
-    $result = ts_queryDatabase( $query );
-
-    $numRows = mysqli_num_rows( $result );
-
-
-    if( $numRows < $numCodes ) {
-        echo "<b>Warning:</b>  ".
-            "More coupon codes than users still needing a code.<br>\n";
-        }
-    
-
-    echo "<table>\n";
-
-    $j = 0;
-    
-
-    for( $i=0; $i<$numRows && $j<$numCodes; $i++ ) {
-        $ticket_id = ts_mysqli_result( $result, $i, "ticket_id" );
-        $email = ts_mysqli_result( $result, $i, "email" );
-    
-        $coupon_code = $separateCodes[ $j ];
-
-        $unused = false;
-
-        while( ! $unused ) {
-            
-            $query = "SELECT COUNT(*) FROM $tableNamePrefix"."tickets " .
-                "WHERE coupon_code = '$coupon_code';";
-            $countResult = ts_queryDatabase( $query );
-            
-            $alreadyUsingCount = ts_mysqli_result( $countResult, 0, 0 );
-
-            if( $alreadyUsingCount == 0 ) {
-                $unused = true;
-                }
-            else {
-                // try next one
-
-                echo "<b>WARNING:</b>  ".
-                    "Coupon <b><tt>$coupon_code</tt></b> already ".
-                    "used in database.<br>\n";
-                
-                $j ++;
-                if( $j >= $numCodes ) {
-                    break;
-                    }
-                
-                $coupon_code = $separateCodes[ $j ];
-                }    
-            }
-        
-        if( $j >= $numCodes ) {
-            break;
-            }
-        
-        echo "Setting coupon <b><tt>$coupon_code</tt></b> ".
-            "for ticket [<b><tt>$ticket_id</tt></b>] ($email)<br>\n";
-
-        
-    
-        $query = "UPDATE $tableNamePrefix"."tickets SET " .
-            "coupon_code = '$coupon_code' " .
-            "WHERE ticket_id = '$ticket_id';";
-        ts_queryDatabase( $query );
-
-        $j++;
-        }
-    echo "</table>\n";
-
-    echo "Done.<br>";
-    }
-
-
-
-
-
-
-function ts_clearCouponCodes() {
-    ts_checkPassword( "clear_coupon_codes" );
-
-    
-    echo "[<a href=\"server.php?action=show_data" .
-         "\">Main</a>]<br><br><br>";
-    
-    global $tableNamePrefix;
-
-    $confirm = ts_requestFilter( "confirm", "/[01]/" );
-    
-    if( $confirm != 1 ) {
-        echo "You must check the Confirm box to clear coupons\n";
-        return;
-        }
-    
-
-    $coupon_prefix = ts_requestFilter( "coupon_prefix", "/[A-Z0-9]+/" );
-
-
-    $query = "UPDATE $tableNamePrefix"."tickets ".
-        "SET coupon_code = '' ".
-        "WHERE coupon_code LIKE '$coupon_prefix%';";
-    
-    $result = ts_queryDatabase( $query );
-
-    global $ts_mysqlLink;
-    
-    $affected = mysqli_affected_rows( $ts_mysqlLink );
-
-    echo "Cleared <b>$affected</b> coupon codes.<br>\n";
-    }
-
-
-    
-
-
-// sends note emails for every result in a SQL query
-function ts_sendNote_q( $inQuery, $message_subject, $message_text,
-                        $inShowOptOutLink, $inUseBulkEmailer ) {
-    global $tableNamePrefix, $fullServerURL;
-    
-    $result = ts_queryDatabase( $inQuery );
-    
-    $numRows = mysqli_num_rows( $result );
-
-    echo "Query is:<br>$inQuery<br><br>";
-
-    echo "Based on query, sending $numRows emails:<br><br><br>\n";
-
-    if( $inUseBulkEmailer ) {
-        echo "Using bulk emailer<br><br>";
-
-        $allEmails = array();
-        $allCodes = array();
-        $allCoupons = array();
-
-
-        $custom_message_text = $message_text;
-        
-        if( $inShowOptOutLink ) {
-            $custom_message_text = $message_text .
-                "\n\n" .
-                "-----\n" .
-                "You can opt out of future email updates by clicking the " .
-                "following link:\n" .
-                "  $fullServerURL?action=email_opt_in&in=0&" .
-                "ticket_id=%CUSTOM%" .
-                "\n\n";
-            }
-        
-        $custom_link = "$fullServerURL?action=show_downloads&" .
-            "ticket_id=%CUSTOM%";
-
-        $custom_message_text =
-            preg_replace( '/#DOWNLOAD_LINK#/', $custom_link,
-                          $custom_message_text );
-
-        $custom_message_text =
-            preg_replace( '/#DOWNLOAD_CODE#/', "%CUSTOM%",
-                          $custom_message_text );
-
-        $custom_message_text =
-            preg_replace( '/#COUPON_CODE#/', "%CUSTOM2%",
-                          $custom_message_text );
-        
-        for( $i=0; $i<$numRows; $i++ ) {
-            $allEmails[] = ts_mysqli_result( $result, $i, "email" );
-            $allCodes[] = ts_mysqli_result( $result, $i, "ticket_id" );
-            $allCoupons[] = ts_mysqli_result( $result, $i, "coupon_code" );
-            }
-        
-
-        be_addMessage( $message_subject, $custom_message_text,
-                       $allEmails, $allCodes, $allCoupons );
-
-        
-        $numAdded = count( $allEmails );
-        
-        echo "Added $numAdded messages to bulk emailer.<br><br>";
-        return;
-        }
-    
-    
-    for( $i=0; $i<$numRows; $i++ ) {
-        $name = ts_mysqli_result( $result, $i, "name" );
-        $email = ts_mysqli_result( $result, $i, "email" );
-        $ticket_id = ts_mysqli_result( $result, $i, "ticket_id" );
-        $coupon_code = ts_mysqli_result( $result, $i, "coupon_code" );
-
-        echo "[$i] Sending note to $email ... ";
-
-        $custom_message_text = $message_text;
-
-        if( $inShowOptOutLink ) {
-            $custom_message_text = $message_text .
-                "\n\n" .
-                "-----\n" .
-                "You can opt out of future email updates by clicking the " .
-                "following link:\n" .
-                "  $fullServerURL?action=email_opt_in&in=0&" .
-                "ticket_id=$ticket_id" .
-                "\n\n";
-            }
-        $custom_link = "$fullServerURL?action=show_downloads&" .
-            "ticket_id=$ticket_id";
-
-        $custom_message_text =
-            preg_replace( '/#DOWNLOAD_LINK#/', $custom_link,
-                          $custom_message_text );
-
-        $custom_message_text =
-            preg_replace( '/#DOWNLOAD_CODE#/', $ticket_id,
-                          $custom_message_text );
-
-        $custom_message_text =
-            preg_replace( '/#COUPON_CODE#/', $coupon_code,
-                          $custom_message_text );
-        
-        $emailResult = ts_sendNote_p( $message_subject, $custom_message_text,
-                                      $name, $email );
-
-        if( $emailResult ) {
-            echo "SUCCESS";
-            }
-        else {
-            echo "FAILURE";
-            }
-        echo "<br><br>\n";
-        flush();
-        }
-    }
-    
-    
-// sends a note email to a specific name address
-function ts_sendNote_p( $message_subject, $message_text, $inName, $inEmail ) {
-        
-    
-    global $siteName, $fullServerURL, $mainSiteURL;
-
-    $mailSubject = $message_subject;
-    
-    $mailBody = "$inName:\n\n". $message_text ."\n\n";
-    
-
-    /*
-    echo "\n<br>Sending mail to: $inEmail<br>\n";
-    echo "Subject: $mailSubject<br>\n";
-    echo "Headers: $mailHeaders<br>\n";
-    echo "Body: <br>\n<pre>$mailBody</pre><br>\n";
-    */
-    
-    $result = ts_mail( $inEmail,
-                       $mailSubject,
-                       $mailBody,
-                       // note emails are bulk, not transactional
-                       false );
-    return $result;
-    }
-
-
- 
-function ts_mail( $inEmail,
-                  $inSubject,
-                  $inBody,
-                  // true for transactional emails that should use
-                  // a different SMTP
-                  $inTrans = false ) {
-    
-    global $useSMTP, $siteEmailAddress, $siteEmailDomain;
-
-    if( $useSMTP ) {
-        require_once "Mail.php";
-
-        global $smtpHost, $smtpPort, $smtpUsername, $smtpPassword;
-
-        $messageID = "<" . uniqid() . "@$siteEmailDomain>";
-        
-        $headers = array( 'From' => $siteEmailAddress,
-                          'To' => $inEmail,
-                          'Subject' => $inSubject,
-                          'Date' => date( "r" ),
-                          'Message-Id' => $messageID );
-        $smtp;
-
-        if( $inTrans ) {
-            global $smtpHostTrans, $smtpPortTrans,
-                $smtpUsernameTrans, $smtpPasswordTrans;
-
-            $smtp = Mail::factory( 'smtp',
-                                   array ( 'host' => $smtpHostTrans,
-                                           'port' => $smtpPortTrans,
-                                           'auth' => true,
-                                           'username' => $smtpUsernameTrans,
-                                           'password' => $smtpPasswordTrans ) );
-            }
-        else {
-            $smtp = Mail::factory( 'smtp',
-                                   array ( 'host' => $smtpHost,
-                                           'port' => $smtpPort,
-                                           'auth' => true,
-                                           'username' => $smtpUsername,
-                                           'password' => $smtpPassword ) );
-            }
-        
-
-        $mail = $smtp->send( $inEmail, $headers, $inBody );
-
-
-        if( PEAR::isError( $mail ) ) {
-            ts_log( "Email send failed:  " .
-                    $mail->getMessage() );
-            return false;
-            }
-        else {
-            return true;
-            }
-        }
-    else {
-        // raw sendmail
-        $mailHeaders = "From: $siteEmailAddress";
-        
-        return mail( $inEmail,
-                     $inSubject,
-                     $inBody,
-                     $mailHeaders );
-        }
-    }
- 
 
 
 
@@ -3105,7 +1267,7 @@ function ts_log( $message ) {
         $slashedMessage = mysqli_real_escape_string( $ts_mysqlLink, $message );
     
         $query = "INSERT INTO $tableNamePrefix"."log VALUES ( " .
-            "'$slashedMessage', CURRENT_TIMESTAMP );";
+            "NULL, '$slashedMessage', CURRENT_TIMESTAMP );";
         $result = ts_queryDatabase( $query );
         }
     }
