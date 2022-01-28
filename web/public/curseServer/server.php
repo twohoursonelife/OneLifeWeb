@@ -824,6 +824,7 @@ function cs_liveTime() {
     global $minServedSecondsCount;
     if( $seconds < $minServedSecondsCount ) {
         // life is too short to count as time served.
+        cs_log("live_time denied for not reaching min second count");
         echo "OK";
         return;
         }
