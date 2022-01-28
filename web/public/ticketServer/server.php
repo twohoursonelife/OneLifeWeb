@@ -275,7 +275,7 @@ function ts_setupDatabase() {
             "key_id INT(10) NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "login_key VARCHAR(255) NOT NULL UNIQUE," .
             "discord_id VARCHAR(255) NOT NULL UNIQUE," .
-            "creation_date DATETIME NOT NULL," .
+            "creation_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP," .
             "email CHAR(255) NOT NULL UNIQUE," .
             "blocked TINYINT NOT NULL," .
             "time_played INT(11) NOT NULL DEFAULT '0', " . 
