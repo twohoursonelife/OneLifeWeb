@@ -3,7 +3,7 @@
 // Basic settings
 // You must set these for the server to work
 
-require '../dbconfig.php';
+require '../config.php';
 
 // The URL of to the server.php script.
 $fullServerURL = "http://play.twohoursonelife.com/photoServer/server.php";
@@ -13,7 +13,7 @@ $ticketServerURL = "http://play.twohoursonelife.com/ticketServer/server.php";
 
 
 // The URL of the main, public-face website
-$mainSiteURL = "http://twohoursonelife.com";
+$mainSiteURL = "http://play.twohoursonelife.com/";
 
 
 // script must have write access here
