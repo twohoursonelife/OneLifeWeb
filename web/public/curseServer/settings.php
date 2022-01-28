@@ -80,7 +80,7 @@ $enableLog = 1;
 
 
 // should web-based admin require yubikey two-factor authentication?
-$enableYubikey = 1;
+$enableYubikey = 0;
 
 // 12-character Yubikey IDs, one list for each access password
 // each list is a set of ids separated by :
