@@ -6,19 +6,19 @@
 require '../config.php';
 
 // The URL of to the server.php script.
-$fullServerURL = "http://localhost/jcr13/fitnessServer/server.php";
+$fullServerURL = "http://play.twohoursonelife.com/fitnessServer/server.php";
 
 
 
 // The URL of the ticket server's server.php script.
 // This is used to validate client requests.
-$ticketServerURL = "http://localhost/jcr13/ticketServer/server.php";
+$ticketServerURL = "http://play.twohoursonelife.com/ticketServer/server.php";
 
 
 
 
 // The URL of the main, public-face website
-$mainSiteURL = "http://localhost/jcr13/";
+$mainSiteURL = "http://play.twohoursonelife.com/";
 
 
 
