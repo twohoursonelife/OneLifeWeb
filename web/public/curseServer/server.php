@@ -544,7 +544,7 @@ function cs_showDetail( $checkPassword = true ) {
     global $tableNamePrefix;
     
 
-    $email = cs_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i" );
+    $email = cs_requestFilter( "email", "/[A-Z0-9._%+\-]+/i" );
             
     $query = "SELECT id, curse_score, total_curse_score, extra_life_sec ".
         "FROM $tableNamePrefix"."users ".
