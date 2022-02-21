@@ -2,8 +2,10 @@
 
 $mainServerName = "play.twohoursonelife.com";
 
+require '../config.php';
+
 // change on live server
-$sharedSecret = "secret";
+$sharedSecret = $sharedGameServerSecret;
 
 
 $sequenceNumberFile = "/tmp/arcServerSequenceNumber.txt";
