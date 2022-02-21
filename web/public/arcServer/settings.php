@@ -1,6 +1,6 @@
 <?php
 
-$mainServerName = "bigserver2.onehouronelife.com";
+$mainServerName = "play.twohoursonelife.com";
 
 // change on live server
 $sharedSecret = "secret";
