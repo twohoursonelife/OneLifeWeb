@@ -6,20 +6,20 @@
 require '../config.php';
 
 // The URL of to the server.php script.
-$fullServerURL = "http://play.twohoursonelife.com/photoServer/server.php";
+$fullServerURL = "http://web.twohoursonelife.com/photoServer/server.php";
 
 // for checking ticket_id hashes
-$ticketServerURL = "http://play.twohoursonelife.com/ticketServer/server.php";
+$ticketServerURL = "http://web.twohoursonelife.com/ticketServer/server.php";
 
 
 // The URL of the main, public-face website
-$mainSiteURL = "http://play.twohoursonelife.com/";
+$mainSiteURL = "http://web.twohoursonelife.com/";
 
 
 // script must have write access here
 // must be web-accessible
 $submittedPhotoLocation = "photos/";
-$submittedPhotoURL = "http://play.twohoursonelife.com/photoServer/photos/";
+$submittedPhotoURL = "http://web.twohoursonelife.com/photoServer/photos/";
 
 
 

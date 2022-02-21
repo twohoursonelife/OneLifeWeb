@@ -6,13 +6,13 @@
 require '../config.php';
 
 // The URL of to the server.php script.
-$fullServerURL = "http://play.twohoursonelife.com/curseServer/server.php";
+$fullServerURL = "http://web.twohoursonelife.com/curseServer/server.php";
 
 
 
 
 // The URL of the main, public-face website
-$mainSiteURL = "https://twohoursonelife.com";
+$mainSiteURL = "https://web.twohoursonelife.com";
 
 
 
