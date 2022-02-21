@@ -3,7 +3,7 @@ Queries to migrate the existing 2HOL database (Created circa August 2019) data t
 The update will be known as The Great Web Server Update.
 
 ### Migrate old table `users` to `ticketServer_tickets`
-Initial migration
+Migration
 ```SQL
 INSERT INTO PROD_2HOL.ticketServer_tickets (PROD_2HOL.ticketServer_tickets.key_id, PROD_2HOL.ticketServer_tickets.login_key, PROD_2HOL.ticketServer_tickets.discord_id, PROD_2HOL.ticketServer_tickets.email, PROD_2HOL.ticketServer_tickets.blocked, PROD_2HOL.ticketServer_tickets.time_played, PROD_2HOL.ticketServer_tickets.last_activity)
 SELECT id, l_key, discord_id, email, banned, time_played, last_activity
@@ -27,9 +27,9 @@ ALTER TABLE keymaker.server_lives ADD lineage_depth INT NOT NULL AFTER deepest_d
 UPDATE keymaker.server_lives set lineage_depth = deepest_descendant_generation - generation WHERE deepest_descendant_generation != -1 and generation != -1;
 ```
 
-Initial migration
+Migration
 ```SQL
-INSERT INTO testwebserver.lineageServer_lives (testwebserver.lineageServer_lives.id, testwebserver.lineageServer_lives.death_time, testwebserver.lineageServer_lives.server_id, testwebserver.lineageServer_lives.user_id, testwebserver.lineageServer_lives.player_id, testwebserver.lineageServer_lives.parent_id, testwebserver.lineageServer_lives.killer_id, testwebserver.lineageServer_lives.death_cause, testwebserver.lineageServer_lives.display_id, testwebserver.lineageServer_lives.age, testwebserver.lineageServer_lives.name, testwebserver.lineageServer_lives.male, testwebserver.lineageServer_lives.last_words, testwebserver.lineageServer_lives.generation, testwebserver.lineageServer_lives.eve_life_id, testwebserver.lineageServer_lives.deepest_descendant_generation, testwebserver.lineageServer_lives.deepest_descendant_life_id, testwebserver.lineageServer_lives.lineage_depth)
+INSERT INTO PROD_2HOL.lineageServer_lives (PROD_2HOL.lineageServer_lives.id, PROD_2HOL.lineageServer_lives.death_time, PROD_2HOL.lineageServer_lives.server_id, PROD_2HOL.lineageServer_lives.user_id, PROD_2HOL.lineageServer_lives.player_id, PROD_2HOL.lineageServer_lives.parent_id, PROD_2HOL.lineageServer_lives.killer_id, PROD_2HOL.lineageServer_lives.death_cause, PROD_2HOL.lineageServer_lives.display_id, PROD_2HOL.lineageServer_lives.age, PROD_2HOL.lineageServer_lives.name, PROD_2HOL.lineageServer_lives.male, PROD_2HOL.lineageServer_lives.last_words, PROD_2HOL.lineageServer_lives.generation, PROD_2HOL.lineageServer_lives.eve_life_id, PROD_2HOL.lineageServer_lives.deepest_descendant_generation, PROD_2HOL.lineageServer_lives.deepest_descendant_life_id, PROD_2HOL.lineageServer_lives.lineage_depth)
 SELECT id, death_time, server_id, user_id, player_id, parent_id, killer_id, death_cause, display_id, age, name, male, last_words, generation, eve_life_id, deepest_descendant_generation, deepest_descendant_life_id, lineage_depth
 FROM keymaker.server_lives;
 ```
