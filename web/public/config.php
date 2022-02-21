@@ -48,3 +48,11 @@ $passwordHashingPepper = "262f43f043031282c645d0eb352df723a3ddc88f";
 // hashes of passwords for for web-based admin access
 $accessPasswords = array( "8e409075ab35b161f6d2d57775e5efbee8d7b674",
                           "20e1883a3d63607b60677dca87b41e04316ffc63" );
+
+
+// secret used for encrypting a download code when it is requested for a
+// given email address
+// (for remote procedure calls that need to obtain a download code for a given
+//  user)
+// MUST replace this to keep ticket ids secret from outsiders
+$sharedEncryptionSecret = "19fbc6168268d7a80945e35d999f0d0ddae4cdff";
