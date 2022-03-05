@@ -2,3 +2,4 @@ web/public/certbot
 data/certbot/*/*
 web/public/*/log.txt
 web/public/photoServer/photos
+migration_config_info.yml
