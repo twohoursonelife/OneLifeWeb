@@ -7,7 +7,7 @@ In this update, the prexisting php web servers will be disabled by removing them
 - Plan a timeframe with 24-48 hours notice, ideally when multiple of Colin, Kripts, Risvh or additional support such as Adk or Tux are avaliable, but mostly a heads up for players.
 - Ensure pre-requisite tasks completed.
 - Shutdown the game server and dictator bot.
-- Locate new database, empty. (Except for the table oldLineageLives, a record of premigration lives that will not be migrated) (`PROD_2HOL`, in this case with user `game_web_server` for config use and user `thol` for migration tasks)
+- Ensure new database is empty of any tables or data. (Except for the empty table old_lineage_lives)
 
 ### Nginx changes
 - Rename existing web root `/var/www/play.twohoursonelife.com` to `/var/www/old-web-servers`
@@ -46,21 +46,8 @@ In this update, the prexisting php web servers will be disabled by removing them
 
 # Pre-requisits
 - Install PHP-FPM 5.6. Servers are not yet migrated to more up to date versions. https://tecadmin.net/install-php-ubuntu-20-04/
-- Gather PHP web server configuration information.
-    - DB Address
-    - DB Name
-    - DB Username
-    - DB Password
-    - Shared game server secret
-    - Password hasing pepper
-    - Access passwords (Max 20 chars)
-    - Hashs of access passwords (passwordHashUtility.php)
-    - Shared encryption secret
-- Gather dictator configuration information.
-    - DB Address
-    - DB Name
-    - DB Username
-    - DB Password
+- Gather PHP web server configuration information, as in migration_config_info.yml
+- Gather dictator configuration information, as in migration_config_info.yml
 - Ensure dictator MySQL account has sufficient permissions for PROD_2HOL database.
 
 # Roll back plan
