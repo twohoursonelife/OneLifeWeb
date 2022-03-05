@@ -48,7 +48,6 @@ In this update, the prexisting php web servers will be disabled by removing them
 - Install PHP-FPM 5.6. Servers are not yet migrated to more up to date versions. https://tecadmin.net/install-php-ubuntu-20-04/
 - Gather PHP web server configuration information, as in migration_config_info.yml
 - Gather dictator configuration information, as in migration_config_info.yml
-- Ensure dictator MySQL account has sufficient permissions for PROD_2HOL database.
 
 # Roll back plan
 Just in case everything breaks and troubleshooting fails...
