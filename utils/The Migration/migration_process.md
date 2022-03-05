@@ -47,20 +47,20 @@ In this update, the prexisting php web servers will be disabled by removing them
 # Pre-requisits
 - Install PHP-FPM 5.6. Servers are not yet migrated to more up to date versions. https://tecadmin.net/install-php-ubuntu-20-04/
 - Gather PHP web server configuration information.
-    - DB Address db.twohoursonelife.com
-    - DB Name DEV_2HOL
-    - DB Username dev_game_web_server
-    - DB Password q95ybkwh!9RhB!8!
-    - Shared game server secret rival-reveler-strike
-    - Password hasing pepper i3oimgfm7g7jfx3mb267mmc4khtvkhrnsvwuh9gk
-    - Access passwords (Max 20 chars) ambition-limes-bloom
-    - Hashs of access passwords (passwordHashUtility.php)  7f1ab5219362cbf0b1667f1757519b0dad0a7375
-    - Shared encryption secret nrf42488ep697bxvwd7suon7bkwk2427tyiu8o68
+    - DB Address
+    - DB Name
+    - DB Username
+    - DB Password
+    - Shared game server secret
+    - Password hasing pepper
+    - Access passwords (Max 20 chars)
+    - Hashs of access passwords (passwordHashUtility.php)
+    - Shared encryption secret
 - Gather dictator configuration information.
-    - DB Address db.twohoursonelife.com
-    - DB Name DEV_2HOL
-    - DB Username dev_dictator
-    - DB Password 7I1a8OpPSV0F3aJq
+    - DB Address
+    - DB Name
+    - DB Username
+    - DB Password
 - Ensure dictator MySQL account has sufficient permissions for PROD_2HOL database.
 
 # Roll back plan
