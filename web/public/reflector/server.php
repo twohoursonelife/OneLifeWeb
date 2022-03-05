@@ -10,7 +10,7 @@ $startSpreadingFraction = .50;
 $stopSpreadingFraction = .10;
 
 
-$updateServerURL = "http://play.twohoursonelife.com/updateServer/server.php";
+$updateServerURL = "http://play.twohoursonelife.com/diffBundleServer/server.php";
 
 
 include( "requiredVersion.php" );
