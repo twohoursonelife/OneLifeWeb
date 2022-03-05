@@ -293,8 +293,8 @@ function ls_setupDatabase() {
             "UNIQUE KEY( email )," .
             "email_sha1 CHAR(40) NOT NULL," .
             "index( email_sha1 ), ".
-            "sequence_number INT NOT NULL," .
-            "life_count INT NOT NULL );";
+            "sequence_number INT DEFAULT 0," .
+            "life_count INT DEFAULT 0 );";
 
         $result = ls_queryDatabase( $query );
 
