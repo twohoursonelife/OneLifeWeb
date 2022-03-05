@@ -20,7 +20,7 @@ In this update, the prexisting php web servers will be disabled by removing them
 ### Deploy new PHP servers
 - [ ] Clone this directory into place. In `/var/www/` run `git clone https://github.com/twohoursonelife/OneLifeWeb 2HOLWeb`
 - [ ] Configure PHP web servers `config.php` `reflector/requiredVersion.php`
-- [ ] Clone https://github.com/twohoursonelife/OneLifeData7 into home directory and copy faces directory into /var/www/2HOLWeb/web/public/lineageServer/
+- [ ] Clone https://github.com/twohoursonelife/OneLifeData7 into home directory and `cp -r ~/OneLifeData7/faces/ /var/www/2HOLWeb/web/public/lineageServer/faces`
 
 ### Database setup and migration
 - [ ] Restart nginx `sudo systemctl restart nginx`
