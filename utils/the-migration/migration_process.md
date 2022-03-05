@@ -37,6 +37,7 @@ In this update, the prexisting php web servers will be disabled by removing them
 - [ ] Update game server settings to new web server URL `web.twohoursonelife.com` and mirror changes in OneLife repository.
     - [ ] Update server ID to `mainServer`
 - [ ] Use certbot to generate optional SSL certs and config.
+    - [ ] `certbot -d web.twohoursonelife.com`
 - [ ] Restart game server. Login using your own client, confirm login and death log successful.
 - [ ] Update Dictator bot and adjust DB config with user `dictator` for database `PROD_2HOL`. Restart Dictator.
 - [ ] Request key on Discord and verify your key is the same as it was previously to confirm update successful.
