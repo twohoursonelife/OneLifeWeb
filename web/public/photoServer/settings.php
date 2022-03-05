@@ -118,8 +118,8 @@ $usersPerPage = 20;
 
 
 // header and footers for various pages
-$header = "include( \"../noBotsHeader.php\" );";
-$footer = "include( \"../noCounterFooter.php\" );";
+$header = "include( \"../../templates/noBotsHeader.php\" );";
+$footer = "include( \"../../templates/noCounterFooter.php\" );";
 
 
 
