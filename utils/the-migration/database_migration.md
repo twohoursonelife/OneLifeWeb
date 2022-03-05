@@ -9,10 +9,10 @@ INSERT INTO PROD_2HOL.ticketServer_tickets (
     PROD_2HOL.ticketServer_tickets.key_id, 
     PROD_2HOL.ticketServer_tickets.login_key, 
     PROD_2HOL.ticketServer_tickets.discord_id,
-     PROD_2HOL.ticketServer_tickets.email, 
-     PROD_2HOL.ticketServer_tickets.blocked, 
-     PROD_2HOL.ticketServer_tickets.time_played, 
-     PROD_2HOL.ticketServer_tickets.last_activity)
+    PROD_2HOL.ticketServer_tickets.email, 
+    PROD_2HOL.ticketServer_tickets.blocked, 
+    PROD_2HOL.ticketServer_tickets.time_played, 
+    PROD_2HOL.ticketServer_tickets.last_activity)
 SELECT id, l_key, discord_id, email, banned, time_played, last_activity
 FROM keymaker.users;
 ```
@@ -21,6 +21,30 @@ Following migration, amend creation_date for all records to todays date at midni
 ```SQL
 UPDATE ticketServer_tickets
 SET creation_date = "2022-03-01 00:00:00"
+```
+
+Setup users tables for lineage, curse and photo servers.
+```SQL
+INSERT INTO PROD_2HOL.lineageServer_users (
+    PROD_2HOL.lineageServer_users.id, 
+    PROD_2HOL.lineageServer_users.email, 
+    PROD_2HOL.lineageServer_users.email_sha1)
+SELECT key_id, email, SHA1(LOWER(email))
+FROM PROD_2HOL.ticketServer_tickets;
+```
+```SQL
+INSERT INTO PROD_2HOL.curseServer_users (
+    PROD_2HOL.curseServer_users.id, 
+    PROD_2HOL.curseServer_users.email)
+SELECT key_id, email
+FROM PROD_2HOL.ticketServer_tickets;
+```
+```SQL
+INSERT INTO PROD_2HOL.photoServer_users (
+    PROD_2HOL.photoServer_users.id, 
+    PROD_2HOL.photoServer_users.email)
+SELECT key_id, email
+FROM PROD_2HOL.ticketServer_tickets;
 ```
 
 ### Migrate old table `server_lives` to `old_lineage_lives`
