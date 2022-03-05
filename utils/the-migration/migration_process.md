@@ -34,8 +34,12 @@ In this update, the prexisting php web servers will be disabled by removing them
 
 ### Config and final testing
 - [ ] Generate access password hash's using ticketServer/passwordHashUtility.php
-- [ ] Update game server settings to new web server URL `web.twohoursonelife.com` and mirror changes in OneLife repository.
-    - [ ] Update server ID to `mainServer`
+- [ ] Update game server settings:
+    - [ ] serverID
+    - [ ] photoServerSharedSecret
+    - [ ] lineageServerSharedSecret
+    - [ ] curseServerSharedSecret
+    - [ ] reflectorSharedSecret
 - [ ] Use certbot to generate optional SSL certs and config.
     - [ ] `certbot -d web.twohoursonelife.com`
 - [ ] Restart game server. Login using your own client, confirm login and death log successful.
