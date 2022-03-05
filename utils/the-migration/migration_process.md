@@ -24,7 +24,7 @@ In this update, the prexisting php web servers will be disabled by removing them
 
 ### Database setup and migration
 - [ ] Restart nginx `sudo systemctl restart nginx`
-- [ ] Run database setup for each PHP web server by navigating to `http://web.twohoursonelife/serverName/server.php` for the following servers:
+- [ ] Run database setup for each PHP web server by navigating to `http://play.twohoursonelife/serverName/server.php` for the following servers:
     - [ ] ticketServer
     - [ ] photoServer
     - [ ] lineageServer
