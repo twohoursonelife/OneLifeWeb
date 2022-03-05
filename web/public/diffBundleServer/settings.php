@@ -4,7 +4,7 @@
 
 
 // should not be web-accessible
-$downloadFilePath = "/var/www/2HOLWeb/data/diffDownloads/";
+$downloadFilePath = "/var/www/2HOLWeb/data/diffDownloads/patches/";
 
 // files in the download path must be named like:
 // 5_inc_mac.dbz
