@@ -292,9 +292,9 @@ function ps_setupDatabase() {
             "id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "email VARCHAR(254) NOT NULL," .
             "UNIQUE KEY( email )," .
-            "sequence_number INT DEFAULT 0," .
-            "photos_submitted INT DEFAULT 0," .
-            "photos_rejected INT DEFAULT 0 );";
+            "sequence_number INT NOT NULL," .
+            "photos_submitted INT NOT NULL," .
+            "photos_rejected INT NOT NULL );";
 
         $result = ps_queryDatabase( $query );
 

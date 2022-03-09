@@ -23,30 +23,6 @@ UPDATE ticketServer_tickets
 SET creation_date = "2022-03-01 00:00:00"
 ```
 
-Setup users tables for lineage, curse and photo servers.
-```SQL
-INSERT INTO PROD_2HOL.lineageServer_users (
-    PROD_2HOL.lineageServer_users.id, 
-    PROD_2HOL.lineageServer_users.email, 
-    PROD_2HOL.lineageServer_users.email_sha1)
-SELECT key_id, email, SHA1(LOWER(email))
-FROM PROD_2HOL.ticketServer_tickets;
-```
-```SQL
-INSERT INTO PROD_2HOL.curseServer_users (
-    PROD_2HOL.curseServer_users.id, 
-    PROD_2HOL.curseServer_users.email)
-SELECT key_id, email
-FROM PROD_2HOL.ticketServer_tickets;
-```
-```SQL
-INSERT INTO PROD_2HOL.photoServer_users (
-    PROD_2HOL.photoServer_users.id, 
-    PROD_2HOL.photoServer_users.email)
-SELECT key_id, email
-FROM PROD_2HOL.ticketServer_tickets;
-```
-
 ### Migrate old table `server_lives` to `old_lineage_lives`
 This will migrate the old server lives into a new table within the new database to be archived.
 

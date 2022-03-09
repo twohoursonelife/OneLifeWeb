@@ -259,10 +259,10 @@ function cs_setupDatabase() {
             "id INT UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT," .
             "email VARCHAR(254) NOT NULL," .
             "UNIQUE KEY( email )," .
-            "sequence_number INT DEFAULT 0," .
-            "curse_score INT DEFAULT 0," .
-            "extra_life_sec FLOAT DEFAULT 0," .
-            "total_curse_score INT DEFAULT 0 );";
+            "sequence_number INT NOT NULL," .
+            "curse_score INT NOT NULL," .
+            "extra_life_sec FLOAT NOT NULL," .
+            "total_curse_score INT NOT NULL );";
 
         $result = cs_queryDatabase( $query );
 
