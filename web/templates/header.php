@@ -1,7 +1,7 @@
 <html>
 
 <head>
-<title>One Hour One Life</title>
+<title>Two Hours One Life</title>
 
 <?php
 global $pathToRoot;
