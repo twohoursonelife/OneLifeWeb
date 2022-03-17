@@ -1476,6 +1476,7 @@ function ls_setDeepestGenerationUp( $inID,
 
 
 function ls_getFaceURLForAge( $inAge, $inDisplayID ) {
+    // faceAges and faceAge corrosponds to OHOL ages
     $faceAges = array( 0, 4, 14, 30, 40, 55 );
 
     $faceAge = 0;
@@ -1485,13 +1486,13 @@ function ls_getFaceURLForAge( $inAge, $inDisplayID ) {
     else if( $inAge >= 10 && $inAge < 20 ) {
         $faceAge = 14;
         }
-    else if( $inAge >= 20 && $inAge < 40 ) {
+    else if( $inAge >= 20 && $inAge < 104 ) {
         $faceAge = 30;
         }
-    else if( $inAge >= 40 && $inAge < 55 ) {
+    else if( $inAge >= 100 && $inAge < 117 ) {
         $faceAge = 40;
         }
-    else if( $inAge >= 55 ) {
+    else if( $inAge >= 117 ) {
         $faceAge = 55;
         }
     global $facesWebPath;
