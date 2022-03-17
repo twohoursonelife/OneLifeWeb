@@ -2565,7 +2565,7 @@ function ls_getDeathHTML( $inID, $inRelID ) {
         $deathString = "";
         
         if( $killer_id == -1 ) {
-            if( $age >= 60 ) {
+            if( $age >= 120 ) {
                 $deathString = "Died of Old Age";
                 }
             else {
