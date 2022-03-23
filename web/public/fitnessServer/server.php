@@ -1614,7 +1614,6 @@ function fs_checkAndUpdateServerSeqNumber() {
             "WHERE name = '$server_name';";
         fs_queryDatabase( $query );
         }
-        fs_log($query);
     }
 
 
