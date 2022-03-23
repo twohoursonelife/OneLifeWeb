@@ -73,7 +73,7 @@ $tableNamePrefix = "curseServer_";
 
 
 
-$enableLog = 0;
+$enableLog = 1;
 
 
 // should web-based admin require yubikey two-factor authentication?
