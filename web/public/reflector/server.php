@@ -14,7 +14,7 @@ $updateServerURL = "http://play.twohoursonelife.com/diffBundleServer/server.php"
 
 
 // include( "requiredVersion.php" );
-include ("../../../data/diffDownloads/patches/requiredVersion.php")
+include ("../../../data/diffDownloads/patches/requiredVersion.php");
 
 global $version;
 
