@@ -15,7 +15,8 @@ $lineageCache = array();
 // edit settings.php to change server' settings
 include( "settings.php" );
 
-
+// Length of a characters age in seconds
+$ageLengthSeconds = 7200;
 
 
 // no end-user settings below this point
@@ -1861,7 +1862,7 @@ function ls_printFrontPageRows( $inForceIndexClause,
         $generationString = $generation;
         
         if( $generation == -1 ) {
-            if( $deathAgoSec >= 3600 ) {
+            if( $deathAgoSec >= $ageLengthSeconds ) {
                 $generationString = "Ancestor unknown";
                 }
             else {
@@ -2468,7 +2469,7 @@ function ls_displayGenRow( $inGenArray, $inCenterID, $inRelID, $inFullWords ) {
         $genString;
 
         if( $gen == -1 ) {
-            if( ls_getDeathSecAgo( $full[0] ) >= 3600 ) {
+            if( ls_getDeathSecAgo( $full[0] ) >= $ageLengthSeconds ) {
                 $genString = "Generation ? (Ancestor unknown):";
                 }
             else {
