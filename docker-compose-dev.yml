@@ -1,0 +1,28 @@
+version: '3'
+services:
+  nginx-dev:
+    image: nginx:stable-alpine
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx-dev.conf:/etc/nginx/conf.d/default.conf
+      - ./web:/web
+  php-dev:
+    build:
+      context: .
+      dockerfile: php.Dockerfile
+    volumes:
+      - ./web:/web
+  mysql-dev:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: 'secret'
+      MYSQL_USER: 'localhost'
+      MYSQL_PASSWORD: 'secret'
+      MYSQL_DATABASE: 'localhost'
+    volumes:
+      - mysqldata-dev:/var/lib/mysql
+    ports:
+      - 3306:3306
+volumes:
+  mysqldata-dev: {}
