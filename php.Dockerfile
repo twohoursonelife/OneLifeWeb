@@ -1,5 +1,5 @@
-FROM php:fpm
+FROM php:5.6.40-fpm-alpine
 
-RUN docker-php-ext-install mysqli
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 
-RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN install-php-extensions xdebug mysqli curl xml
