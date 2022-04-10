@@ -1815,6 +1815,7 @@ function ls_printFrontPageRows( $inForceIndexClause,
                                 $inFilterClause, $inOrderBy, $inNumRows ) {
     global $tableNamePrefix;
     global $photoServerURL, $usePhotoServer;
+    global $ageLengthSeconds;
 
     $startTime = microtime( true );
 
@@ -2456,6 +2457,8 @@ function ls_displayPerson( $inID, $inRelID, $inFullWords ) {
 
 
 function ls_displayGenRow( $inGenArray, $inCenterID, $inRelID, $inFullWords ) {
+
+    global $ageLengthSeconds;
 
 
     $full = $inGenArray;
