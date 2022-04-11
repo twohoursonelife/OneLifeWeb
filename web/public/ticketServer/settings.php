@@ -6,7 +6,7 @@
 require '../config.php';
 
 // The URL of to the server.php script.
-$fullServerURL = $mainSiteURL + "ticketServer/server.php";
+$fullServerURL = $ticketServerURL;
 
 
 // End Basic settings

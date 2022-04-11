@@ -9,10 +9,6 @@ require '../config.php';
 $fullServerURL = $mainSiteURL + "reviewServer/server.php";
 
 
-// for checking ticket_id hashes
-$ticketServerURL = $mainSiteURL + "ticketServer/server.php";
-
-
 // End Basic settings
 
 

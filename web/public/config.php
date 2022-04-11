@@ -8,6 +8,10 @@
 $mainSiteURL = "https://web.twohoursonelife.com/";
 
 
+// URL to specific servers, generally used commonly.
+$ticketServerURL = $mainSiteURL + "ticketServer/server.php";
+
+
 // secret shared with trusted game servers that allows them to post
 // game stats
 

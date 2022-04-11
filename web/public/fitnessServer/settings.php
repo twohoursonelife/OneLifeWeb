@@ -9,12 +9,6 @@ require '../config.php';
 $fullServerURL = $mainSiteURL + "fitnessServer/server.php";
 
 
-
-// The URL of the ticket server's server.php script.
-// This is used to validate client requests.
-$ticketServerURL = $mainSiteURL + "ticketServer/server.php";
-
-
 // End Basic settings
 
 

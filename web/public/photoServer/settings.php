@@ -9,10 +9,6 @@ require '../config.php';
 $fullServerURL = $mainSiteURL + "photoServer/server.php";
 
 
-// for checking ticket_id hashes
-$ticketServerURL = $mainSiteURL + "ticketServer/server.php";
-
-
 // script must have write access here
 // must be web-accessible
 $submittedPhotoLocation = "photos/";

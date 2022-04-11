@@ -15,11 +15,6 @@ $photoServerURL = $mainSiteURL + "photoServer/server.php";
 $usePhotoServer = true;
 
 
-
-// The URL of the ticket server's server.php script.
-// This is used to validate ticket IDs.
-$ticketServerURL = $mainSiteURL + "ticketServer/server.php";
-
 // to enable ticket server checks when filtering by email
 $checkEmailHashes = false;
 
