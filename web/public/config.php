@@ -9,11 +9,13 @@ $databaseName = "database";
 
 
 // Base URL/Domain for public web servers
-$mainSiteURL = "https://web.twohoursonelife.com/";
+$mainSiteDomain = "web.twohoursonelife.com";
+
+$mainSiteURL = "https://" + $mainSiteDomain + "/";
 
 
-// URL to specific servers, generally used commonly.
-$ticketServerURL = $mainSiteURL + "ticketServer/server.php";
+// URL to specific servers, generally used commonly. http only for compatability.
+$ticketServerURL = "http://" + $mainSiteDomain + "ticketServer/server.php";
 
 
 // secret shared with trusted game servers that allows them to post
