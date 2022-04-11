@@ -1,5 +1,6 @@
 <?php
 
+require '../config.php';
 
 $tooFullFraction = .90;
 
@@ -10,7 +11,7 @@ $startSpreadingFraction = .50;
 $stopSpreadingFraction = .10;
 
 
-$updateServerURL = "http://play.twohoursonelife.com/diffBundleServer/server.php";
+$updateServerURL = $mainSiteURL + "diffBundleServer/server.php";
 
 
 // include( "requiredVersion.php" );

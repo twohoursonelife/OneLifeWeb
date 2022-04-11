@@ -6,12 +6,7 @@
 require '../config.php';
 
 // The URL of to the server.php script.
-$fullServerURL = "http://play.twohoursonelife.com/ticketServer/server.php";
-
-
-// The URL of the main, public-face website
-$mainSiteURL = "http://play.twohoursonelife.com/";
-
+$fullServerURL = $mainSiteURL + "ticketServer/server.php";
 
 
 // End Basic settings

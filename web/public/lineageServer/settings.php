@@ -6,17 +6,11 @@
 require '../config.php';
 
 // The URL of to the server.php script.
-$fullServerURL = "http://play.twohoursonelife.com/lineageServer/server.php";
-
-
-
-
-// The URL of the main, public-face website
-$mainSiteURL = "http://play.twohoursonelife.com";
+$fullServerURL = $mainSiteURL + "lineageServer/server.php";
 
 
 // the URL of the photo server to link to for photo appearances
-$photoServerURL = "http://play.twohoursonelife.com/photoServer/server.php";
+$photoServerURL = $mainSiteURL + "photoServer/server.php";
 
 $usePhotoServer = true;
 
@@ -24,7 +18,7 @@ $usePhotoServer = true;
 
 // The URL of the ticket server's server.php script.
 // This is used to validate ticket IDs.
-$ticketServerURL = "http://play.twohoursonelife.com/ticketServer/server.php";
+$ticketServerURL = $mainSiteURL + "ticketServer/server.php";
 
 // to enable ticket server checks when filtering by email
 $checkEmailHashes = false;

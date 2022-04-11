@@ -2,10 +2,10 @@
 
 // Basic settings
 // You must set these for the server to work
-$databaseServer = "localhost";
-$databaseUsername = "testUser";
-$databasePassword = "testPassword";
-$databaseName = "test";
+
+
+// Base URL/Domain for public web servers
+$mainSiteURL = "https://web.twohoursonelife.com/";
 
 
 // secret shared with trusted game servers that allows them to post
