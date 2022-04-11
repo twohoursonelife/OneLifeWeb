@@ -2,6 +2,10 @@
 
 // Basic settings
 // You must set these for the server to work
+$databaseServer = "server";
+$databaseUsername = "username";
+$databasePassword = "password";
+$databaseName = "database";
 
 
 // Base URL/Domain for public web servers
