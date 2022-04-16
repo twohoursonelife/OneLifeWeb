@@ -16,7 +16,7 @@ $mainSiteURL = "https://" + $mainSiteDomain;
 
 // URL to specific servers, generally used commonly. http only for compatability.
 $ticketServerURL = "http://" + $mainSiteDomain + "ticketServer/server.php";
-
+$photoServerURL = "http://" + $mainSiteDomain + "photoServer/server.php";
 
 // secret shared with trusted game servers that allows them to post
 // game stats

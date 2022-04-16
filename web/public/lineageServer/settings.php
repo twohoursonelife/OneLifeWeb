@@ -9,9 +9,6 @@ require '../config.php';
 $fullServerURL = $mainSiteURL + "lineageServer/server.php";
 
 
-// the URL of the photo server to link to for photo appearances
-$photoServerURL = $mainSiteURL + "photoServer/server.php";
-
 $usePhotoServer = true;
 
 
