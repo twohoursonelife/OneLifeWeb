@@ -8,10 +8,10 @@ $databasePassword = "password";
 $databaseName = "database";
 
 
-// Base URL/Domain for public web servers
-$mainSiteDomain = "web.twohoursonelife.com";
+// Base URL/Domain for public web servers. Must have a forward slash at the end.
+$mainSiteDomain = "web.twohoursonelife.com/";
 
-$mainSiteURL = "https://" + $mainSiteDomain + "/";
+$mainSiteURL = "https://" + $mainSiteDomain;
 
 
 // URL to specific servers, generally used commonly. http only for compatability.
