@@ -8,13 +8,13 @@ $databasePassword = "password";
 $databaseName = "database";
 
 
-// Base URL/Domain for public web servers. Must have a forward slash at the end.
+// Base domain for public web servers. Must have a forward slash at the end.
 $mainSiteDomain = "web.twohoursonelife.com/";
 
+// Main URL with https
 $mainSiteURL = "https://" + $mainSiteDomain;
 
-
-// URL to specific servers, generally used commonly. http only for compatability.
+// We prefer https in all cases, but functions in the client and web servers will not accept it, so we define these specifically.
 $ticketServerURL = "http://" + $mainSiteDomain + "ticketServer/server.php";
 $photoServerURL = "http://" + $mainSiteDomain + "photoServer/server.php";
 
