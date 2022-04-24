@@ -11,7 +11,6 @@ $startSpreadingFraction = .50;
 $stopSpreadingFraction = .10;
 
 
-$updateServerURL = $mainSiteURL + "diffBundleServer/server.php";
 
 
 // include( "requiredVersion.php" );

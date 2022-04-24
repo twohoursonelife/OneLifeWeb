@@ -17,6 +17,7 @@ $mainSiteURL = "https://" + $mainSiteDomain;
 // We prefer https in all cases, but functions in the client and web servers will not accept it, so we define these specifically.
 $ticketServerURL = "http://" + $mainSiteDomain + "ticketServer/server.php";
 $photoServerURL = "http://" + $mainSiteDomain + "photoServer/server.php";
+$updateServerURL = "http://" + $mainSiteDomain + "diffBundleServer/server.php";
 
 // secret shared with trusted game servers that allows them to post
 // game stats
