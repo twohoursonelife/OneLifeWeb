@@ -26,8 +26,8 @@ sudo chown -R $USER:$USER /var/www/$DOMAIN
 git clone https://github.com/twohoursonelife/OneLifeWeb
 
 # Setup web config
-sudo cp /var/www/$DOMAIN/OneLifeWeb/site.conf /etc/nginx/sites-avaliable/$DOMAIN
-sudo ln -s /etc/nginx/sites-avaliable/$DOMAIN /etc/nginx/sites-enabled/
+sudo cp /var/www/$DOMAIN/OneLifeWeb/site.conf /etc/nginx/sites-available/$DOMAIN
+sudo ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
 sudo systemctl restart nginx
 
 # App setup
