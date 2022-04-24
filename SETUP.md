@@ -25,7 +25,7 @@ Required details for config
 - Shared encryption secret (40 chars [a-zA-Z0-9])
 
 ## Furter config
-- It may be necessary to copy downloads and patches from an existing server to the new server. This should kept in OneLifeWeb/data/diffDownloads
+- It may be necessary to copy downloads and patches from an existing server to the new server. This should kept in `OneLifeWeb/data/diffDownloads`
 - Enter current game version in `OneLifeWeb/data/diffDownloads/requiredVersion.php`
 
 
