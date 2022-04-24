@@ -38,7 +38,7 @@ cp -r ~/OneLifeData7/faces/ /var/www/$DOMAIN/OneLifeWeb/web/public/lineageServer
 mkdir /var/www/$DOMAIN/OneLifeWeb/web/public/photoServer/photos
 
 mkdir /var/www/$DOMAIN/OneLifeWeb/data/diffDownloads/patches
-ln -s /var/www/$DOMAIN/OneLifeWeb/data/diffDownloads /var/www/$DOMAIN/web/public/downloads
+ln -s /var/www/$DOMAIN/OneLifeWeb/data/diffDownloads /var/www/$DOMAIN/OneLifeWeb/web/public/downloads
 
 echo "twohoursonelife $GAME_SERVER" >> /var/www/$DOMAIN/OneLifeWeb/web/public/reflector/remoteServerList.ini
 
