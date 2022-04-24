@@ -6,6 +6,9 @@ $5/month [DigitalOcean](https://m.do.co/c/930cfa370b47) droplet will do the tric
 
 This script will do it all
 ```bash
+#!/bin/bash
+set -eu
+
 $DOMAIN = "web.twohoursonelife.com"
 $GAME_SERVER = "play.twohoursonelife.com 8005"
 
