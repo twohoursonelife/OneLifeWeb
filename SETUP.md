@@ -35,7 +35,7 @@ sudo cp /var/www/$DOMAIN/OneLifeWeb/site.conf /etc/nginx/sites-avaliable/$DOMAIN
 sudo ln -s /etc/nginx/site-avaliable/$DOMAIN /etc/nginx/sites-enabled/
 sudo systemctl restart nginx
 
-# Game web servers setup
+# App setup
 cd ~
 git clone https://github.com/twohoursonelife/OneLifeData7
 cp - r ~/OneLifeData7/faces/ /var/www/$DOMAIN/OneLifeWeb/web/public/lineageServer/faces
@@ -51,6 +51,7 @@ echo "twohoursonelife $GAME_SERVER" >> /var/www/$DOMAIN/OneLifeWeb/web/public/re
 sudo apt install -y certbot
 certbot -d $DOMAIN
 
+# Done
 echo "Setup Complete. Check server address is correct in /etc/nginx/sites-avaliable/$DOMAIN and complete OneLifeWeb/web/public/config.php"
 ```
 
