@@ -4,10 +4,6 @@
 
 $5/month [DigitalOcean](https://m.do.co/c/930cfa370b47) droplet will do the trick.
 
-For testing I use the root user, but for best practice setup seee [initial server setup](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04).
-1. [Install Nginx](https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-20-04)
-2. [Secure Nginx with Let's Encrypt](https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04)
-
 This script will do it all
 ```bash
 $DOMAIN = "web.twohoursonelife.com"
