@@ -2,7 +2,7 @@
 set -eu
 
 $DOMAIN = "web.twohoursonelife.com"
-$GAME_SERVER = "play.twohoursonelife.com 8006"
+$GAME_SERVER = "play.twohoursonelife.com 8005"
 
 # Setup
 sudo apt update
