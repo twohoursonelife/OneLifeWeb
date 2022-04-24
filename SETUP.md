@@ -48,6 +48,7 @@ ln -s /var/www/$DOMAIN/OneLifeWeb/data/diffDownloads /var/www/$DOMAIN/web/public
 echo "twohoursonelife $GAME_SERVER" >> /var/www/$DOMAIN/OneLifeWeb/web/public/reflector/remoteServerList.ini
 
 # https setup. DO NOT enable redirects
+sudo apt install -y certbot
 certbot -d $DOMAIN
 
 echo "Setup Complete. Check server address is correct in /etc/nginx/sites-avaliable/$DOMAIN and complete OneLifeWeb/web/public/config.php"
