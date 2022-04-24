@@ -7,7 +7,8 @@ $5/month [DigitalOcean](https://m.do.co/c/930cfa370b47) droplet will do the tric
 For testing I use the root user, but for best practice setup seee [initial server setup](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04).
 
 ## Main setup
-Run `setup.sh`
+Run [setup.sh](https://github.com/twohoursonelife/OneLifeWeb/blob/main/setup.sh)
+
 Either clone this directory into your home directory and run the script or copy past the script into a new file in your home directory.
 
 ## config.php
