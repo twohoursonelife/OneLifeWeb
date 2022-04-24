@@ -27,7 +27,7 @@ git clone https://github.com/twohoursonelife/OneLifeWeb
 
 # Setup web config
 sudo cp /var/www/$DOMAIN/OneLifeWeb/site.conf /etc/nginx/sites-avaliable/$DOMAIN
-sudo ln -s /etc/nginx/site-avaliable/$DOMAIN /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-avaliable/$DOMAIN /etc/nginx/sites-enabled/
 sudo systemctl restart nginx
 
 # App setup
