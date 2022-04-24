@@ -4,10 +4,7 @@
 
 $5/month [DigitalOcean](https://m.do.co/c/930cfa370b47) droplet will do the trick.
 
-This script will do it all
-```bash
-#!/bin/bash
-set -eu
+For testing I use the root user, but for best practice setup seee [initial server setup](https://www.digitalocean.com/community/tutorials/initial-server-setup-with-ubuntu-20-04).
 
 $DOMAIN = "web.twohoursonelife.com"
 $GAME_SERVER = "play.twohoursonelife.com 8005"
