@@ -33,7 +33,7 @@ sudo systemctl restart nginx
 # App setup
 cd ~
 git clone https://github.com/twohoursonelife/OneLifeData7
-cp - r ~/OneLifeData7/faces/ /var/www/$DOMAIN/OneLifeWeb/web/public/lineageServer/faces
+cp -r ~/OneLifeData7/faces/ /var/www/$DOMAIN/OneLifeWeb/web/public/lineageServer/faces
 
 mkdir /var/www/$DOMAIN/OneLifeWeb/web/public/photoServer/photos
 
