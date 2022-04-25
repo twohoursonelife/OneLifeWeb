@@ -3,7 +3,7 @@ Find our website https://twohoursonelife.com
 
 
 ## How to setup
-See SETUP.md
+See [SETUP.md](https://github.com/twohoursonelife/OneLifeWeb/blob/main/SETUP.md)
 
 ## To do
 - Remove web directory and move public directory up one
