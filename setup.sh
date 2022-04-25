@@ -28,7 +28,7 @@ git clone https://github.com/twohoursonelife/OneLifeWeb
 
 # Setup web config
 sudo cp /var/www/$DOMAIN/OneLifeWeb/site.conf /etc/nginx/sites-available/$DOMAIN
-sudo sed -i 's/web.twohoursonelife.com/$DOMAIN/' /etc/nginx/sites-available/$DOMAIN
+sudo sed -i "s/web.twohoursonelife.com/$DOMAIN/" /etc/nginx/sites-available/$DOMAIN
 sudo ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
 sudo systemctl restart nginx
 
