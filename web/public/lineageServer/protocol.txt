@@ -53,6 +53,6 @@ request will be rejected.
 
 display_id  is the object ID of the player character.
 parent_id   is -1 for Eve
-killer_id   is -1 if player not murdered
+killer_id   is -1 if player not murdered or less than -1 to idicate an object ID that killed the player.
 
 name and last_words must be URL-encoded (Maybe+Like+This)
