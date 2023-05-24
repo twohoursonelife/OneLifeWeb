@@ -2031,7 +2031,7 @@ function ls_getCousinNumberWord( $inCousinNumber ) {
         case 7:
             return "Seventh";
         case 8:
-            return "Eigth";
+            return "Eighth";
         case 9:
             return "Ninth";
         case 10:
