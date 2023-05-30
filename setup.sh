@@ -27,6 +27,7 @@ sudo chown -R $USER:$USER /var/www/$DOMAIN
 git clone https://github.com/twohoursonelife/OneLifeWeb
 
 # Setup web config
+# Optionally create /etc/nginx/blockips.conf with any IP block entries
 sudo cp /var/www/$DOMAIN/OneLifeWeb/site.conf /etc/nginx/sites-available/$DOMAIN
 sudo sed -i "s/web.twohoursonelife.com/$DOMAIN/" /etc/nginx/sites-available/$DOMAIN
 sudo ln -s /etc/nginx/sites-available/$DOMAIN /etc/nginx/sites-enabled/
