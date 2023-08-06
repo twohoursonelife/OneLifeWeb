@@ -6,13 +6,13 @@
 require '../config.php';
 
 // The URL of to the server.php script.
-$fullServerURL = $mainSiteURL + "photoServer/server.php";
+$fullServerURL = $mainSiteURL . "photoServer/server.php";
 
 
 // script must have write access here
 // must be web-accessible
 $submittedPhotoLocation = "photos/";
-$submittedPhotoURL = $mainSiteURL + "photoServer/photos/";
+$submittedPhotoURL = $mainSiteURL . "photoServer/photos/";
 
 
 
