@@ -583,7 +583,7 @@ function lt_showDetail( $checkPassword = true ) {
     global $tableNamePrefix;
     
 
-    $email = lt_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i" );
+    $email = lt_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
             
     $query = "SELECT id, token_count, start_time ".
         "FROM $tableNamePrefix"."users ".
@@ -616,7 +616,7 @@ function lt_getSequenceNumber() {
     global $tableNamePrefix;
     
 
-    $email = lt_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = lt_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
 
     if( $email == "" ) {
         lt_log( "getSequenceNumber denied for bad email" );
@@ -710,7 +710,7 @@ function lt_checkSeqHash( $email ) {
 function lt_spendToken() {
     global $tableNamePrefix;
 
-    $email = lt_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = lt_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
 
     
     $trueSeq = lt_checkSeqHash( $email );
@@ -771,7 +771,7 @@ function lt_spendToken() {
 function lt_refundToken() {
     global $tableNamePrefix;
 
-    $email = lt_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = lt_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
 
     
     $trueSeq = lt_checkSeqHash( $email );
@@ -858,7 +858,7 @@ function lt_getTokenCountEmail( $email ) {
 
 function lt_getTokenCount() {
     
-    $email = lt_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = lt_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
 
     
     if( $email == "" ) {        
