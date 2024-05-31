@@ -985,7 +985,7 @@ function rs_showDetail( $checkPassword = true ) {
     global $tableNamePrefix;
     
 
-    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i" );
+    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
             
     $query = "SELECT * FROM $tableNamePrefix"."user_stats ".
             "WHERE email = '$email';";
