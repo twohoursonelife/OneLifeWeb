@@ -1180,7 +1180,7 @@ function rs_deletePoll() {
 // if $doNotPrint is true, returns active poll ID or -1
 function rs_checkForPoll( $doNotPrint = false ) {
 
-    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
 
     if( $email == "" ) {
         if( $doNotPrint ) {
@@ -1295,7 +1295,7 @@ function rs_pollVote() {
     global $tableNamePrefix, $sharedGameServerSecret, $rs_mysqlLink;
     
 
-    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
     $poll_id = rs_requestFilter( "poll_id", "/[0-9]+/i", "0" );
     $vote_number = rs_requestFilter( "vote_number", "/[0-9]+/i", "0" );
 
@@ -2002,7 +2002,7 @@ function rs_getSequenceNumber() {
     global $tableNamePrefix;
     
 
-    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
 
     if( $email == "" ) {
         echo "DENIED";
@@ -2042,7 +2042,7 @@ function rs_logGame() {
     global $tableNamePrefix, $sharedGameServerSecret;
     
 
-    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
     $game_seconds = rs_requestFilter( "game_seconds", "/[0-9]+/i", "0" );
     $sequence_number = rs_requestFilter( "sequence_number", "/[0-9]+/i", "0" );
 
@@ -2134,7 +2134,7 @@ function rs_getStats() {
     global $tableNamePrefix, $sharedGameServerSecret;
     
 
-    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
     $sequence_number = rs_requestFilter( "sequence_number", "/[0-9]+/i", "0" );
 
     $hash_value = rs_requestFilter( "hash_value", "/[A-F0-9]+/i", "" );
@@ -2218,7 +2218,7 @@ function rs_submitReview() {
     global $tableNamePrefix, $sharedGameServerSecret, $rs_mysqlLink;
     
 
-    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
     $review_score = rs_requestFilter( "review_score", "/[0-9]+/i", "0" );
 
     $review_name = rs_requestFilter( "review_name", "/[A-Z0-9._\- ]+/i", "" );
@@ -2323,7 +2323,7 @@ function rs_removeReview() {
     global $tableNamePrefix, $rs_mysqlLink;
     
 
-    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+@[A-Z0-9.\-]+/i", "" );
+    $email = rs_requestFilter( "email", "/[A-Z0-9._%+\-]+/i", "" );
 
     $sequence_number = rs_requestFilter( "sequence_number", "/[0-9]+/i", "0" );
 
