@@ -1,4 +1,6 @@
-
+// creation_date of 2022-03-17 00:00:00 indicates the specific creation date is unknown
+// but is between August 2019 and, until creation dates began being recorded, March 2022
+// creation_date can therefore be after last_activity
 
 // creates a ticket record and returns a ticket code
 

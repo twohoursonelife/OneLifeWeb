@@ -11,3 +11,46 @@ ALTER TABLE reviewServer_user_stats ADD lives_since_recent_poll INT NOT NULL AFT
 ALTER TABLE reviewServer_user_stats ADD seconds_lived_since_recent_poll INT NOT NULL AFTER lives_since_recent_poll;
 
 ALTER TABLE reviewServer_user_stats ADD recent_poll_answered TINYINT NOT NULL AFTER seconds_lived_since_recent_poll;
+
+// Migration from legacy custom ticket based time recording to Jason's reviewServer time recording
+// All queries must be sequential; I suggest taking a backup before proceeding
+
+// Populating empty table with legacy lineage life count data
+INSERT INTO reviewServer_user_stats (email, game_count, first_game_date, last_game_date)
+SELECT km.email, km.life_count, "2022-03-17 00:00:00", tst.last_activity
+FROM keymaker.users km
+LEFT JOIN ticketServer_tickets tst ON km.email = tst.email;
+// As per ticketServer_tickets:
+// creation_date of 2022-03-17 00:00:00 indicates the specific creation date is unknown
+// but is between August 2019 and, until creation dates began being recorded, March 2022
+// creation_date can therefore be after last_activity
+
+// Populating with modern lineage based life count
+// To be completed during down time between update disabling old play time recording
+
+/// Update legacy user life counts
+UPDATE reviewServer_user_stats as us
+JOIN lineageServer_users lsu ON us.email = lsu.email
+SET us.game_count = us.game_count + lsu.life_count;
+
+/// Insert non legacy user life counts
+INSERT INTO reviewServer_user_stats (email, game_count, first_game_date, last_game_date)
+SELECT lsu.email, lsu.life_count, tst.creation_date, tst.last_activity
+FROM lineageServer_users lsu
+LEFT JOIN reviewServer_user_stats rsus ON lsu.email = rsus.email
+LEFT JOIN ticketServer_tickets tst ON lsu.email = tst.email
+WHERE rsus.email IS NULL;
+
+
+// Populating further with ticket based time played
+// To be completed after update that disables old play time recording
+UPDATE reviewServer_user_stats rsus
+JOIN ticketServer_tickets tst ON rsus.email = tst.email
+SET rsus.game_total_seconds = tst.time_played * 60
+WHERE tst.time_played > 0;
+
+
+// Final tidy
+UPDATE reviewServer_user_stats
+SET review_score = -1
+WHERE review_score = 0;
