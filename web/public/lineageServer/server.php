@@ -1374,17 +1374,6 @@ function ls_logLife() {
         "lineage_depth = 0;";
 
     ls_queryDatabase( $query );
-    
-    $timeplayed = $age;
-
-    //Fix for Eves
-    if($parent_id == '-1'){
-        $timeplayed = $timeplayed-14;
-    }
-
-    $query = "UPDATE ticketServer_tickets SET time_played = time_played+$timeplayed, last_activity = CURRENT_TIMESTAMP WHERE email = '$email'";
-
-    ls_queryDatabase($query);
 
     $life_id = ls_getLifeID( $server_id, $player_id );
     $deepestInfo = ls_computeDeepestGeneration( $life_id );
