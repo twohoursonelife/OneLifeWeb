@@ -15,9 +15,9 @@ $mainSiteDomain = "web.twohoursonelife.com/";
 $mainSiteURL = "https://" . $mainSiteDomain;
 
 // We prefer https in all cases, but functions in the client and web servers will not accept it, so we define these specifically.
-$ticketServerURL = "http://" . $mainSiteDomain . "ticketServer/server.php";
-$photoServerURL = "http://" . $mainSiteDomain . "photoServer/server.php";
-$updateServerURL = "http://" . $mainSiteDomain . "diffBundleServer/server.php";
+$ticketServerURL = "https://web.twohoursonelife.com/ticketServer/server.php";
+$photoServerURL = "http://web.twohoursonelife.com/photoServer/server.php";
+$updateServerURL = "http://web.twohoursonelife.com/diffBundleServer/server.php";
 
 // secret shared with trusted game servers that allows them to post
 // game stats
