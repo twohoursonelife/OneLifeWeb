@@ -26,6 +26,6 @@ Required details for config
 
 ## Furter config
 - It may be necessary to copy downloads and patches from an existing server to the new server. This should be kept in `OneLifeWeb/data/diffDownloads`
-- Enter current game version in `OneLifeWeb/data/diffDownloads/requiredVersion.php`
+- Enter current game version in `OneLifeWeb/data/diffDownloads/patches/requiredVersion.php`
 
 

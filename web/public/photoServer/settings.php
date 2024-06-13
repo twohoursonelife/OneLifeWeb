@@ -6,13 +6,13 @@
 require '../config.php';
 
 // The URL of to the server.php script.
-$fullServerURL = $mainSiteURL . "photoServer/server.php";
+$fullServerURL = "https://web.twohoursonelife.com/photoServer/server.php";
 
 
 // script must have write access here
 // must be web-accessible
 $submittedPhotoLocation = "photos/";
-$submittedPhotoURL = $mainSiteURL . "photoServer/photos/";
+$submittedPhotoURL = "https://web.twohoursonelife.com/photoServer/photos/";
 
 
 
@@ -27,7 +27,7 @@ $submittedPhotoURL = $mainSiteURL . "photoServer/photos/";
 
 // should not contain spaces
 
-//$sharedGameServerSecret = "secret_phrase";
+$sharedGameServerSecret = "secret_phrase";
 
 
 

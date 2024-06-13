@@ -1,5 +1,11 @@
 web/public/certbot
-data/certbot/*/*
 web/public/*/log.txt
 web/public/photoServer/photos
+
+data/*.zip
+data/certbot/*/*
+data/diffDownloads/*.zip
+data/diffDownloads/*.gz
+data/diffDownloads/patches/
+
 migration_config_info.yml
