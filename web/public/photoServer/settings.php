@@ -27,7 +27,7 @@ $submittedPhotoURL = "https://web.twohoursonelife.com/photoServer/photos/";
 
 // should not contain spaces
 
-$sharedGameServerSecret = "secret_phrase";
+// $sharedGameServerSecret = "secret_phrase";
 
 
 
