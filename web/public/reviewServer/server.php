@@ -2121,9 +2121,9 @@ function rs_logGame() {
 
     // still, regenerate them all so that the Posted On timestamps
     // will update
-    rs_generateRecentStatic();
-    rs_generateTopPlaytimeStatic();
-    rs_generateReviewCountStatic();
+    // rs_generateRecentStatic();
+    // rs_generateTopPlaytimeStatic();
+    // rs_generateReviewCountStatic();
     
     echo "OK";
     }
