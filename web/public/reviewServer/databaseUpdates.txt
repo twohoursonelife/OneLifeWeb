@@ -54,3 +54,8 @@ WHERE tst.time_played > 0;
 UPDATE reviewServer_user_stats
 SET review_score = -1
 WHERE review_score = 0;
+
+// Extra final tidy, reviewServer assumes a sequence_number of 0 means we need to INSERT instead of UPDATE
+UPDATE reviewServer_user_stats
+SET sequence_number = 1
+WHERE sequence_number = 0;
