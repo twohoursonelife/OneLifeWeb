@@ -2,10 +2,10 @@
 
 // Basic settings
 // You must set these for the server to work
-$databaseServer = "server";
+$databaseServer = "mysql-dev";
 $databaseUsername = "username";
 $databasePassword = "password";
-$databaseName = "database";
+$databaseName = "initial_db";
 
 
 // Base domain for public web servers. Must have a forward slash at the end.
