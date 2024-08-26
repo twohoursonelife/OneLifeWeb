@@ -876,6 +876,8 @@ function ls_getGeneration( $inLifeID ) {
 
         // compute it, if we can
 
+        print("Computing generation for $inLifeID\n");
+
         $server_id = ls_mysqli_result( $result, 0, "server_id" );
         $parent_id = ls_mysqli_result( $result, 0, "parent_id" );
 
@@ -908,6 +910,8 @@ function ls_getGeneration( $inLifeID ) {
         if( $generation != -1 ) {
             // found it
             // save it
+
+            print("Found generation for $generation $inLifeID --\n");
 
             $query = "UPDATE $tableNamePrefix"."lives SET ".
                 "generation = '$generation' WHERE id = '$inLifeID';";
@@ -2672,7 +2676,26 @@ function ls_computeDeepestGeneration( $inID ) {
     }
 
 
+function ls_resetAndRecomputeFamily($eveLifeID) {
+    global $tableNamePrefix;
 
+    // Reset the values for deepest generation, life ID, and lineage depth
+    $query = "UPDATE $tableNamePrefix" . "lives SET
+                generation = -1,
+                eve_life_id = -1, 
+                deepest_descendant_generation = -1,
+                deepest_descendant_life_id = -1, 
+                lineage_depth = 0";
+    ls_queryDatabase($query);
+
+    // Recompute the deepest generation for the specified life
+    // ls_computeDeepestGeneration($eveLifeID);
+
+    // Propagate the new deepest generation up the tree
+    // ls_setDeepestGenerationUp($eveLifeID, 0, 0);
+}
+
+// ls_resetAndRecomputeFamily(1315489);
 
 function ls_getParentLifeID( $inID ) {
     global $tableNamePrefix;
