@@ -2533,6 +2533,7 @@ function ls_displayGenRow( $inGenArray, $inCenterID, $inRelID, $inFullWords ) {
 
 function ls_getDeathHTML( $inID, $inRelID ) {
     global $tableNamePrefix;
+    global $ageLengthSeconds;
     
     $query = "SELECT age, killer_id, server_id, death_cause ".
         "FROM $tableNamePrefix"."lives WHERE id=$inID;";
@@ -2587,7 +2588,7 @@ function ls_getDeathHTML( $inID, $inRelID ) {
         $deathString = "";
         
         if( $killer_id == -1 ) {
-            if( $age >= 120 ) {
+            if( $age >= $ageLengthSeconds / 60 ) {
                 $deathString = "Died of Old Age";
                 }
             else {
