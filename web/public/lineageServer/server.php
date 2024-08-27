@@ -1806,8 +1806,10 @@ function ls_frontPage() {
 
 
 function ls_getGrayPercent( $inDeathAgoSec ) {
-    // full gray in 7 hours, starting after 2 hours
-    $grayPercent = floor( 20 * ( ( $inDeathAgoSec - 2 * 3600 ) / 3600 ) );
+    global $ageLengthSeconds;
+
+    // full gray in 14 hours, starting after 4 hours (assuming 7200 seconds)
+    $grayPercent = floor( 20 * ( ( $inDeathAgoSec - 2 * $ageLengthSeconds ) / $ageLengthSeconds ) );
     
     if( $grayPercent > 100 ) {
         $grayPercent = 100;
