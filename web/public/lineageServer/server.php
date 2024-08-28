@@ -140,6 +140,9 @@ else if( $action == "get_sequence_number" ) {
 else if( $action == "log_life" ) {
     ls_logLife();
     }
+else if( $action == "run_test" ) {
+    ls_runTest();
+    }
 else if( $action == "show_log" ) {
     ls_showLog();
     }
@@ -2663,6 +2666,9 @@ function ls_computeDeepestGeneration( $inID ) {
     $deepest_descendant_life_id =
         ls_mysqli_result( $result, 0, "deepest_descendant_life_id" );
 
+    
+    print("Computing: $inID, $deepest_descendant_generation, $deepest_descendant_life_id   <br/>" );
+
     if( $deepest_descendant_generation == -1 ) {
 
         $deepest_descendant_generation = 0;
@@ -2672,7 +2678,8 @@ function ls_computeDeepestGeneration( $inID ) {
 
         $numNext = count( $nextGen );
 
-        
+        print( "Next gen member count = $numNext <br/>" );
+
         if( $numNext > 0 ) {
             $deepest_descendant_generation = ls_getGeneration( $nextGen[0] );
             $deepest_descendant_life_id = $nextGen[0];
@@ -2689,6 +2696,7 @@ function ls_computeDeepestGeneration( $inID ) {
                 }
             }
 
+        print( "Updating gen for ID = $inID: Deepest = $deepest_descendant_generation <br/>" );
         $query = "UPDATE $tableNamePrefix"."lives ".
             "SET ".
             "deepest_descendant_generation = $deepest_descendant_generation, ".
@@ -2712,6 +2720,10 @@ function ls_computeDeepestGeneration( $inID ) {
     }
 
 
+function ls_runTest() {
+    // phpinfo();
+    print_r(ls_computeDeepestGeneration());    
+    }
 
 
 function ls_getParentLifeID( $inID ) {
