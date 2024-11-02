@@ -6,6 +6,5 @@ data/*.zip
 data/certbot/*/*
 data/diffDownloads/*.zip
 data/diffDownloads/*.gz
-data/diffDownloads/patches/
 
 migration_config_info.yml
