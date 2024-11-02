@@ -1,6 +1,5 @@
 web/public/certbot
 web/public/*/log.txt
-web/public/photoServer/photos
 web/public/lineageServer/faces
 
 data/*.zip
