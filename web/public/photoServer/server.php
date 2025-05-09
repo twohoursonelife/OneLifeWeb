@@ -722,7 +722,7 @@ function ps_displayPhoto( $url, $author_name, $subject_names,
     
     echo "<table width=400 border=0><tr><td colspan=2>";
         
-    echo "<img src='$url'></td></tr>";
+    echo "<img width=400 height=400 src='$url'></td></tr>";
 
         
     echo "<tr><td>by $author_name</td>";
@@ -873,18 +873,77 @@ function ps_photoAppearances() {
 
 
 function ps_frontPage() {
-    global $header, $footer;
+
+    $page = ps_requestFilter( "page", "/[0-9]+/i", "0" );
+
+    global $tableNamePrefix;
+    
+    $query = "SELECT COUNT(*) ".
+        "FROM $tableNamePrefix"."photos;";
+    
+    $result = ps_queryDatabase( $query );
+    $totalPhotos = ps_mysqli_result( $result, 0, 0 );
+        
+        
+    global $header, $footer, $fullServerURL;
 
     eval( $header );
 
+    $numPerPage = 10;
+    $skipAmount = $numPerPage * $page;
+
+    
     echo "<center>";
 
     echo "<br><font size=5>Recent Photographs:</font><br><br>";
-    
-    
-    ps_displayPhotoList( "", "LIMIT 10" );
 
-    echo "</center>";
+    echo "<table border=0 width=400>";
+    echo "<tr><td width=50%>";
+
+    if( $page > 0 ) {
+        // prev button
+        $prevPage = $page - 1;
+        echo "[<a href=$fullServerURL?action=front_page".
+            "&page=$prevPage>Previous</a>]";
+        }
+    echo "</td>";
+    echo "<td width=50% align=right>";
+    
+    if( $totalPhotos > $skipAmount + $numPerPage ) {
+        // next button
+        $nextPage = $page + 1;
+        echo "[<a href=$fullServerURL?action=front_page".
+            "&page=$nextPage>Next</a>]";
+        }
+    echo "</td></tr></table>";
+
+    
+    ps_displayPhotoList( "", "LIMIT $skipAmount, $numPerPage" );
+
+
+
+    echo "<table border=0 width=400>";
+    echo "<tr><td width=50%>";
+
+    if( $page > 0 ) {
+        // prev button
+        $prevPage = $page - 1;
+        echo "[<a href=$fullServerURL?action=front_page".
+            "&page=$prevPage>Previous</a>]";
+        }
+    echo "</td>";
+    echo "<td width=50% align=right>";
+    
+    if( $totalPhotos > $skipAmount + $numPerPage ) {
+        // next button
+        $nextPage = $page + 1;
+        echo "[<a href=$fullServerURL?action=front_page".
+            "&page=$nextPage>Next</a>]";
+        }
+    echo "</td></tr></table>";
+    
+    echo "</center><br><br><br>";
+
     
     eval( $footer );
     }
@@ -903,6 +962,7 @@ function ps_submitPhoto() {
     &photo_author_name=[string]
     &photo_subjects_names=[string]
     &jpg_base64=[jpg file as base 64]
+    &negative_jpg_base64=[jpg file as base 64]
     */
 
     global $tableNamePrefix;
@@ -1006,7 +1066,21 @@ function ps_submitPhoto() {
 
     $pos = strpos( $jpg_binary, $sigComment );
 
-    if( $pos === FALSE ) {
+
+    $negative_jpg_base64 =
+        ps_requestFilter( "negative_jpg_base64", "/[A-Z0-9a-z+\/=]+/", "" );
+
+    $negative_jpg_binary = base64_decode( $negative_jpg_base64 );
+
+    // search for 0xFFEE002A
+    // 002A is length 42 (hash length plus 2 length bytes) 
+    // followed by 40-char hash in ascii
+
+    $sigComment = hex2bin( "FFEE002A" ) . $hash_value;
+
+    $negativePos = strpos( $negative_jpg_binary, $sigComment );
+
+    if( $pos === FALSE || $negativePos === FALSE ) {
         ps_log( "submitPhoto denied for missing hash comment, $email" );
 
         if( $id != -1 ) {
@@ -1031,18 +1105,26 @@ function ps_submitPhoto() {
         return;
         }
 
-    // jpg submission valid
+    // both files of jpg submission valid
 
     // save it into the folder
     global $submittedPhotoLocation, $submittedPhotoURL;
 
-    $photoFileName =
-        ps_hmac_sha1( $email, $sequence_number . uniqid() ) . ".jpg";
+    $photoIDHash = ps_hmac_sha1( $email, $sequence_number . uniqid() );
+    
+    $photoFileName = $photoIDHash . ".jpg";
 
     $filePath = $submittedPhotoLocation . $photoFileName;
-
     
     file_put_contents( $filePath, $jpg_binary );
+
+    
+    $negativePhotoFileName = $photoIDHash . "_negative.jpg";
+
+    $negativeFilePath = $submittedPhotoLocation . $negativePhotoFileName;
+    
+    file_put_contents( $negativeFilePath, $negative_jpg_binary );
+
 
     $photoURL = $submittedPhotoURL . $photoFileName;
     
@@ -1105,20 +1187,22 @@ function ps_submitPhoto() {
 
     global $ps_mysqlLink;
     
-    $photoID = mysqli_insert_id( $ps_mysqlLink );
+    $photoInsertID = mysqli_insert_id( $ps_mysqlLink );
 
     
     // 3.  insert photo_appearances records for each subject and author
     //     (probably write a function for this and call it in a loop)
-    ps_addAppearance( $photoID, $server_name, $photo_author_id );
+    ps_addAppearance( $photoInsertID, $server_name, $photo_author_id );
 
     if( $photo_subject_ids != "" ) {
         foreach( $subjectIDs as $subjectID ) {
-            ps_addAppearance( $photoID, $server_name, $subjectID );
+            ps_addAppearance( $photoInsertID, $server_name, $subjectID );
             }
         }
 
     echo "OK";
+    echo "\n";
+    echo $photoIDHash;
     }
 
 
