@@ -1632,6 +1632,7 @@ function ls_frontPage() {
         if( $numNameMatches > 1000 ) {
             $filterClause = " WHERE 1 ";
             $tooManyNameMatches = true;
+            $customFilterSet = false;
             }
         else {
             // not too many
