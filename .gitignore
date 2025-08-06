@@ -1,15 +1,12 @@
 web/public/lineageServer/faces
 web/public/photoServer/photos/*.jp*g
 
-# TODO: remove setting from file
-web/public/diffBundleServer/settings.php
-
 data/diffDownloads/*.zip
+data/diffDownloads/*.tar.gz
 data/diffDownloads/retroserver
 data/diffDownloads/patches
 data/diffDownloads/patches/*.txt
 data/diffDownloads/patches/*.dbz
-data/diffDownloads/patches/*tar.gz
 data/diffDownloads/patches/*.php
 
 OneLifeData7/
