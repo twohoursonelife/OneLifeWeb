@@ -1,10 +1,17 @@
-web/public/certbot
-web/public/*/log.txt
 web/public/lineageServer/faces
+web/public/photoServer/photos/*.jp*g
 
-data/*.zip
-data/certbot/*/*
+# TODO: remove setting from file
+web/public/diffBundleServer/settings.php
+
 data/diffDownloads/*.zip
-data/diffDownloads/*.gz
+data/diffDownloads/retroserver
+data/diffDownloads/patches
+data/diffDownloads/patches/*.txt
+data/diffDownloads/patches/*.dbz
+data/diffDownloads/patches/*.php
 
-migration_config_info.yml
+OneLifeData7/
+
+# Symlink
+web/public/downloads
