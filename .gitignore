@@ -9,6 +9,7 @@ data/diffDownloads/retroserver
 data/diffDownloads/patches
 data/diffDownloads/patches/*.txt
 data/diffDownloads/patches/*.dbz
+data/diffDownloads/patches/*tar.gz
 data/diffDownloads/patches/*.php
 
 OneLifeData7/
