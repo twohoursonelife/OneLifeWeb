@@ -6,7 +6,7 @@
 require '../config.php';
 
 // The URL of to the server.php script.
-$fullServerURL = $mainSiteURL + "lineageServer/server.php";
+$fullServerURL = "http://web.twohoursonelife.com/lineageServer/server.php";
 
 
 $usePhotoServer = true;
