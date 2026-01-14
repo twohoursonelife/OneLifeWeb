@@ -1375,8 +1375,6 @@ function ls_logLife() {
     $hash_value = strtoupper( $hash_value );
 
     
-    ls_log( "Got logLife call:  " . $_SERVER[ 'QUERY_STRING' ] );
-
     if( $email == "" ||
         $server == "" ) {
 
