@@ -1836,8 +1836,13 @@ function ls_frontPage() {
     echo "<tr><td colspan=6><font size=5>All Time Deep Roots:".
         "</font></td></tr>\n";
     
+    $allTimeDeepForceIndexClause = $forceIndexClause;
+    if( $allTimeDeepForceIndexClause == "" ) {
+        $allTimeDeepForceIndexClause = " FORCE INDEX( lineage_depth ) ";
+    }
+
     ls_printFrontPageRows(
-        $forceIndexClause,
+        $allTimeDeepForceIndexClause,
         $rootFilterClause,
         "lineage_depth DESC, death_time DESC",
         $numPerList );
@@ -1868,8 +1873,13 @@ function ls_frontPage() {
     echo "<tr><td colspan=6><font size=5>This Week's Long Lines:".
         "</font></td></tr>\n";
     
+    $thisWeekLongForceIndexClause = $forceIndexClause;
+    if( $thisWeekLongForceIndexClause == "" ) {
+        $thisWeekLongForceIndexClause = " FORCE INDEX( death_time ) ";
+    }
+
     ls_printFrontPageRows(
-        $forceIndexClause,
+        $thisWeekLongForceIndexClause,
         "$filterClause AND death_time >= DATE_SUB( NOW(), INTERVAL 1 WEEK )",
         "generation DESC, death_time DESC",
         $numPerList );
@@ -1879,7 +1889,12 @@ function ls_frontPage() {
     echo "<tr><td colspan=6><font size=5>All-Time Long Lines:".
         "</font></td></tr>\n";
     
-    ls_printFrontPageRows( $forceIndexClause,
+    $allTimeLongForceIndexClause = $forceIndexClause;
+    if( $allTimeLongForceIndexClause == "" ) {
+        $allTimeLongForceIndexClause = " FORCE INDEX( generation ) ";
+    }
+
+    ls_printFrontPageRows( $allTimeLongForceIndexClause,
                            $filterClause, "generation DESC, death_time DESC",
                            $numPerList );
 
