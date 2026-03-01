@@ -135,12 +135,6 @@ else if( $action == "show_log" ) {
 else if( $action == "clear_log" ) {
     ts_clearLog();
     }
-else if( $action == "block_login_key" ) {
-    ts_blockTicketID();
-    }
-else if( $action == "delete_login_key" ) {
-    ts_deleteTicketID();
-    }
 else if( $action == "check_ticket" ) {
     ts_checkTicket();
     }
@@ -158,12 +152,6 @@ else if( $action == "show_data" ) {
     }
 else if( $action == "show_detail" ) {
     ts_showDetail();
-    }
-else if( $action == "edit_ticket" ) {
-    ts_editTicket();
-    }
-else if( $action == "edit_email" ) {
-    ts_editEmail();
     }
 else if( $action == "logout" ) {
     ts_logout();
