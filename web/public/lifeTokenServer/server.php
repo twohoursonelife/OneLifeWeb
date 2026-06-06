@@ -66,15 +66,7 @@ $setup_footer = "
 
 
 
-// ensure that magic quotes are OFF
-// we hand-filter all _REQUEST data with regexs before submitting it to the DB
-if( get_magic_quotes_gpc() ) {
-    // force magic quotes to be removed
-    $_GET     = array_map( 'lt_stripslashes_deep', $_GET );
-    $_POST    = array_map( 'lt_stripslashes_deep', $_POST );
-    $_REQUEST = array_map( 'lt_stripslashes_deep', $_REQUEST );
-    $_COOKIE  = array_map( 'lt_stripslashes_deep', $_COOKIE );
-    }
+
     
 
 
@@ -1150,20 +1142,6 @@ function lt_addslashes_deep( $inValue ) {
 
 
 
-/**
- * Recursively applies the stripslashes function to arrays of arrays.
- * This effectively disables magic_quote escaping behavior. 
- *
- * @inValue the value or array to stripslashes from.
- *
- * @return the value or array with slashes removed.
- */
-function lt_stripslashes_deep( $inValue ) {
-    return
-        ( is_array( $inValue )
-          ? array_map( 'lt_stripslashes_deep', $inValue )
-          : stripslashes( $inValue ) );
-    }
 
 
 
