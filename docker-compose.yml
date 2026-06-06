@@ -4,9 +4,9 @@ services:
     restart: always
     volumes:
       - ./nginx-dev.conf:/etc/nginx/conf.d/default.conf
-      - ./web:/web
-      - ./data/diffDownloads:/web/public/downloads
-      - ./data:/data
+      - ./web:/var/www/web.twohoursonelife.com/web
+      - ./data/diffDownloads:/var/www/web.twohoursonelife.com/web/public/downloads
+      - ./data:/var/www/web.twohoursonelife.com/web/data
     ports:
       - 80:80
     depends_on:
@@ -17,9 +17,9 @@ services:
     build: .
     restart: always
     volumes:
-      - ./web:/web
-      - ./data/diffDownloads:/web/public/downloads
-      - ./data:/data
+      - ./web:/var/www/web.twohoursonelife.com/web
+      - ./data/diffDownloads:/var/www/web.twohoursonelife.com/web/public/downloads
+      - ./data:/var/www/web.twohoursonelife.com/web/data
     depends_on:
       - mysql
 
