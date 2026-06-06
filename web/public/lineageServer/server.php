@@ -3325,7 +3325,7 @@ function ls_log( $message ) {
 
         $query = "SELECT COUNT(*) FROM $tableNamePrefix"."log;";
 
-        $result = ls_queryDatabase( $query );
+        $result = ls_queryDatabase( $query, false );
         
         $countEntries = ls_mysqli_result( $result, 0, 0 );
 
@@ -3333,7 +3333,7 @@ function ls_log( $message ) {
         
             $query = "DELETE FROM $tableNamePrefix"."log ".
                 "ORDER BY entry_time ASC LIMIT 100";
-            ls_queryDatabase( $query );
+            ls_queryDatabase( $query, false );
             }
         }
     }
