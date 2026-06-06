@@ -49,3 +49,8 @@ db-reset:
 sync-faces:
     mkdir -p web/public/lineageServer/faces
     cp -n ../OneLifeData7/faces/*.png web/public/lineageServer/faces/
+
+# Run tests
+test base_url="http://localhost":
+    TEST_BASE_URL="{{base_url}}" uv run tests/test_endpoints.py
+
