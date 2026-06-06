@@ -19,6 +19,7 @@ setup:
     docker compose up -d
     mkdir -p web/public/photoServer/photos
     mkdir -p data/diffDownloads/patches
+    just sync-faces
     @echo "Waiting for database to be ready..."
     @until docker compose exec -T mysql mysqladmin ping -h 127.0.0.1 -uusername -ppassword --silent >/dev/null 2>&1; do sleep 1; done
     @echo "Initializing database tables..."
@@ -43,3 +44,8 @@ db-shell:
 db-reset:
     docker compose down -v
     just setup
+
+# Copy face images from the OneLifeData7 repository
+sync-faces:
+    mkdir -p web/public/lineageServer/faces
+    cp -n ../OneLifeData7/faces/*.png web/public/lineageServer/faces/
