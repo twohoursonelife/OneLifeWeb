@@ -1090,7 +1090,7 @@ function cs_secondsToAgeSummary( $inSeconds ) {
 function cs_queryDatabase( $inQueryString ) {
     global $cs_mysqlLink;
     
-    if( gettype( $cs_mysqlLink ) != "resource" ) {
+    if( ! $cs_mysqlLink ) {
         // not a valid mysql link?
         cs_connectToDatabase();
         }

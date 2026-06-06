@@ -997,7 +997,7 @@ function lt_secondsToAgeSummary( $inSeconds ) {
 function lt_queryDatabase( $inQueryString ) {
     global $lt_mysqlLink;
     
-    if( gettype( $lt_mysqlLink ) != "resource" ) {
+    if( ! $lt_mysqlLink ) {
         // not a valid mysql link?
         lt_connectToDatabase();
         }

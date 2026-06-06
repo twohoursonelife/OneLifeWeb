@@ -1398,7 +1398,7 @@ function ps_secondsToAgeSummary( $inSeconds ) {
 function ps_queryDatabase( $inQueryString ) {
     global $ps_mysqlLink;
     
-    if( gettype( $ps_mysqlLink ) != "resource" ) {
+    if( ! $ps_mysqlLink ) {
         // not a valid mysql link?
         ps_connectToDatabase();
         }

@@ -3215,7 +3215,7 @@ function ls_queryDatabase( $inQueryString, $inLogLongQueries = true ) {
     $startTime = microtime( true );
     
     
-    if( gettype( $ls_mysqlLink ) != "resource" ) {
+    if( ! $ls_mysqlLink ) {
         // not a valid mysql link?
         ls_connectToDatabase();
         }

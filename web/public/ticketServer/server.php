@@ -1017,7 +1017,7 @@ function ts_closeDatabase() {
 function ts_queryDatabase( $inQueryString ) {
     global $ts_mysqlLink;
     
-    if( gettype( $ts_mysqlLink ) != "resource" ) {
+    if( ! $ts_mysqlLink ) {
         // not a valid mysql link?
         ts_connectToDatabase();
         }

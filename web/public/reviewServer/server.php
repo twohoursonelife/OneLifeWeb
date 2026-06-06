@@ -2512,7 +2512,7 @@ function rs_secondsToAgeSummary( $inSeconds ) {
 function rs_queryDatabase( $inQueryString ) {
     global $rs_mysqlLink;
     
-    if( gettype( $rs_mysqlLink ) != "resource" ) {
+    if( ! $rs_mysqlLink ) {
         // not a valid mysql link?
         rs_connectToDatabase();
         }

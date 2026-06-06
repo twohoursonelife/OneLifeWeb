@@ -2295,7 +2295,7 @@ function fs_secondsToAgeSummary( $inSeconds ) {
 function fs_queryDatabase( $inQueryString ) {
     global $fs_mysqlLink;
     
-    if( gettype( $fs_mysqlLink ) != "resource" ) {
+    if( ! $fs_mysqlLink ) {
         // not a valid mysql link?
         fs_connectToDatabase();
         }
