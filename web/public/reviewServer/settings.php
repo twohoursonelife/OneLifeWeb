@@ -6,7 +6,7 @@
 require '../config.php';
 
 // The URL of to the server.php script.
-$fullServerURL = $mainSiteURL + "reviewServer/server.php";
+$fullServerURL = $mainSiteURL . "reviewServer/server.php";
 
 
 // End Basic settings

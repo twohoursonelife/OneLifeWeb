@@ -6,7 +6,7 @@
 require '../config.php';
 
 // The URL of to the server.php script.
-$fullServerURL = $mainSiteURL + "curseServer/server.php";
+$fullServerURL = $mainSiteURL . "curseServer/server.php";
 
 
 // End Basic settings
@@ -121,8 +121,8 @@ $usersPerPage = 20;
 
 
 // header and footers for various pages
-$header = "include( \"../noBotsHeader.php\" );";
-$footer = "include( \"../noCounterFooter.php\" );";
+$header = "include( \"../../templates/noBotsHeader.php\" );";
+$footer = "include( \"../../templates/noCounterFooter.php\" );";
 
 
 

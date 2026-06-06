@@ -75,12 +75,14 @@ $reportOnly = false;
 function getLastApocalypse() {
     $val = 0;
 
-    $handle = fopen( "lastApocalypse.txt", "r" );
+    if( file_exists( "lastApocalypse.txt" ) ) {
+        $handle = fopen( "lastApocalypse.txt", "r" );
 
-    if( $handle ) {
-        $val = trim( fgets( $handle ) );
+        if( $handle ) {
+            $val = trim( fgets( $handle ) );
 
-        fclose( $handle );
+            fclose( $handle );
+            }
         }
 
     return $val;
@@ -151,7 +153,10 @@ else  if( $action == "trigger_apocalypse" ) {
 
 $serverFound = false;
 
-$handle = fopen( "remoteServerList.ini", "r" );
+$handle = false;
+if( file_exists( "remoteServerList.ini" ) ) {
+    $handle = fopen( "remoteServerList.ini", "r" );
+    }
 
 $totalPlayers = 0;
 $totalCap = 0;
