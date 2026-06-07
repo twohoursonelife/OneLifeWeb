@@ -2,10 +2,10 @@
 
 // Basic settings
 // You must set these for the server to work
-$databaseServer = "mysql";
-$databaseUsername = "username";
-$databasePassword = "password";
-$databaseName = "twohoursonelife";
+$databaseServer = getenv("DB_HOST");
+$databaseUsername = getenv("DB_USER");
+$databasePassword = getenv("DB_PASSWORD");
+$databaseName = getenv("DB_NAME");
 
 
 // Base domain for public web servers. Must have a forward slash at the end.
@@ -25,7 +25,7 @@ $updateServerURL = "http://web.twohoursonelife.com/diffBundleServer/server.php";
 // MUST be changed from this default to prevent false game stats reporting.
 
 // should not contain spaces
-$sharedGameServerSecret = "secret_phrase";
+$sharedGameServerSecret = getenv("SHARED_GAME_SERVER_SECRET");
 
 
 // should web-based admin require yubikey two-factor authentication?
@@ -36,7 +36,7 @@ $enableYubikey = 0;
 // in this file.
 // You can change this to your own string so that password hashes in
 // this file differ from hashes of the same passwords used elsewhere.
-$passwordHashingPepper = "262f43f043031282c645d0eb352df723a3ddc88f";
+$passwordHashingPepper = getenv("PASSWORD_HASHING_PEPPER");
 
 
 // passwords are given as hashes below, computed by:
@@ -56,14 +56,15 @@ $passwordHashingPepper = "262f43f043031282c645d0eb352df723a3ddc88f";
 // default passwords that have been included as hashes below are:
 // "secret" and "secret2"
 
-// hashes of passwords for for web-based admin access
-$accessPasswords = array( "8e409075ab35b161f6d2d57775e5efbee8d7b674",
-                          "20e1883a3d63607b60677dca87b41e04316ffc63" );
+// $accessPasswords = array( "8e409075ab35b161f6d2d57775e5efbee8d7b674",
+//                           "20e1883a3d63607b60677dca87b41e04316ffc63" );
 
+// hashes of passwords for for web-based admin access
+$accessPasswords = array(getenv("ACCESS_PASSWORD"));
 
 // secret used for encrypting a download code when it is requested for a
 // given email address
 // (for remote procedure calls that need to obtain a download code for a given
 //  user)
 // MUST replace this to keep ticket ids secret from outsiders
-$sharedEncryptionSecret = "19fbc6168268d7a80945e35d999f0d0ddae4cdff";
+$sharedEncryptionSecret = getenv("SHARED_ENCRYPTION_SECRET");

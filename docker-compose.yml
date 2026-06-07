@@ -14,8 +14,11 @@ services:
       - mysql
 
   php:
-    build: .
+    build:
+      target: base
     restart: always
+    env_file:
+      - .env.dev
     volumes:
       - ./web:/var/www/web.twohoursonelife.com/web
       - ./data/diffDownloads:/var/www/web.twohoursonelife.com/web/public/downloads
@@ -26,11 +29,8 @@ services:
   mysql:
     image: mysql:8.4
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: 'password'
-      MYSQL_USER: 'username'
-      MYSQL_PASSWORD: 'password'
-      MYSQL_DATABASE: 'twohoursonelife'
+    env_file:
+      - .env.dev
     ports:
       - 3306:3306
     volumes:

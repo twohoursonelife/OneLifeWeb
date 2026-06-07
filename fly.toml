@@ -1,0 +1,37 @@
+app = "onelifeweb"
+primary_region = "ewr"
+
+[build]
+  build-target = "runtime"
+
+[env]
+  # Secrets
+  # DB_HOST
+  # DB_USER
+  # DB_PASSWORD
+  # DB_NAME
+
+  # SHARED_GAME_SERVER_SECRET
+  # PASSWORD_HASHING_PEPPER
+  # SHARED_ENCRYPTION_SECRET
+  # ACCESS_PASSWORD
+
+[http_service]
+  internal_port = 8080
+
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  timeout = "5s"
+  path = "/"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+
+[[restart]]
+  policy = "on-failure"
+
+# [[statics]]
+#   guest_path = "/app/public"
+#   url_prefix = "/public"
