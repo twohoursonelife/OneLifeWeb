@@ -7,17 +7,10 @@ $databaseUsername = getenv("DB_USER");
 $databasePassword = getenv("DB_PASSWORD");
 $databaseName = getenv("DB_NAME");
 
+$mainSiteURL = get_site_url();
 
-// Base domain for public web servers. Must have a forward slash at the end.
-$mainSiteDomain = "web.twohoursonelife.com/";
-
-// Main URL with https
-$mainSiteURL = "https://" . $mainSiteDomain;
-
-// We prefer https in all cases, but functions in the client and web servers will not accept it, so we define these specifically.
-$ticketServerURL = "https://web.twohoursonelife.com/ticketServer/server.php";
-$photoServerURL = "http://web.twohoursonelife.com/photoServer/server.php";
-$updateServerURL = "http://web.twohoursonelife.com/diffBundleServer/server.php";
+// Still referenced across multiple servers
+$ticketServerURL = $mainSiteURL . "/ticketServer/server.php";
 
 // secret shared with trusted game servers that allows them to post
 // game stats
@@ -68,3 +61,21 @@ $accessPasswords = array(getenv("ACCESS_PASSWORD"));
 //  user)
 // MUST replace this to keep ticket ids secret from outsiders
 $sharedEncryptionSecret = getenv("SHARED_ENCRYPTION_SECRET");
+
+function get_protocol()
+{
+    $protocol = 'http';
+
+    if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+        $protocol = 'https';
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+        // Account for proxies
+        $protocol = 'https';
+    }
+
+    return $protocol;
+}
+
+function get_site_url(){
+    return get_protocol() . "://" . $_SERVER['HTTP_HOST'];
+}

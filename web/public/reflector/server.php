@@ -10,7 +10,7 @@ $startSpreadingFraction = .50;
 
 $stopSpreadingFraction = .10;
 
-
+$updateServerURL = $mainSiteURL . "/updateServer/server.php";
 
 
 // include( "requiredVersion.php" );

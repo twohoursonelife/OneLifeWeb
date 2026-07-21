@@ -6,6 +6,17 @@
 <?php
 global $pathToRoot;
 
+$protocol = 'http';
+
+if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+    $protocol = 'https';
+} elseif (!empty($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+    // Account for proxies
+    $protocol = 'https';
+}
+
+$site_url = get_protocol() . "://" . $_SERVER['HTTP_HOST'];
+
 
 $referrer = "";
     
@@ -34,8 +45,8 @@ if( isset( $blockRobots ) && $blockRobots == 1 ) {
     <table border=0 cellspacing=5 cellpadding=0 width=100%><tr>
 
     <td align=center width=11%>[<a href='https://twohoursonelife.com'>Website</a>]</td>
-    <td align=center width=11%>[<a href='https://web.twohoursonelife.com/lineageServer/server.php?action=front_page'>Family Trees</a>]</td>
-    <td align=center width=11%>[<a href='https://web.twohoursonelife.com/photoServer/server.php?action=front_page'>Photos</a>]</td>
+    <td align=center width=11%>[<a href='<?php echo $site_url; ?>/lineageServer/server.php?action=front_page'>Family Trees</a>]</td>
+    <td align=center width=11%>[<a href='<?php echo $site_url; ?>/photoServer/server.php?action=front_page'>Photos</a>]</td>
     <td align=center width=11%>[<a href='https://twotech.twohoursonelife.com/'>Tech Tree</a>]</td>
 
 
