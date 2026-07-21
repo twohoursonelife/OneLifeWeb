@@ -1,8 +1,26 @@
-app = "onelifeweb"
-primary_region = "ewr"
+app = 'onelifeweb'
+primary_region = 'ewr'
 
 [build]
-  build-target = "runtime"
+  build-target = 'runtime'
+
+[http_service]
+  internal_port = 8080
+  min_machines_running = 1
+  force_https = false
+
+  [[http_service.checks]]
+    interval = '30s'
+    timeout = '5s'
+    grace_period = '10s'
+    path = '/'
+
+[[restart]]
+  policy = 'on-failure'
+
+[[vm]]
+  size = 'shared-cpu-1x'
+  memory = '512mb'
 
 [env]
   # Secrets
@@ -15,23 +33,3 @@ primary_region = "ewr"
   # PASSWORD_HASHING_PEPPER
   # SHARED_ENCRYPTION_SECRET
   # ACCESS_PASSWORD
-
-[http_service]
-  internal_port = 8080
-
-[[http_service.checks]]
-  grace_period = "10s"
-  interval = "30s"
-  timeout = "5s"
-  path = "/"
-
-[[vm]]
-  size = "shared-cpu-1x"
-  memory = "512mb"
-
-[[restart]]
-  policy = "on-failure"
-
-# [[statics]]
-#   guest_path = "/app/public"
-#   url_prefix = "/public"

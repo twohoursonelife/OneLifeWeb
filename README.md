@@ -22,6 +22,11 @@ We use `mise` to manage development tools and `just` to run tasks.
    - `just logs`: Tail container logs
    - `just db-shell`: Open MySQL shell
 
-## To do
-- Remove web directory and move public directory up one
-- Move config.php out of public directory, into root
+## Testing
+Once you have the local dev stack running (`just dev`), you can run some simple
+integration tests against it with `just test`. Or use `just test [hostname]` to hit any
+remote deployment.
+
+## Deployment
+`just deploy` will ship it over to Fly.io.
+
