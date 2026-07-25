@@ -710,7 +710,10 @@ function ps_displayPhotoList( $inWhereClause, $inLimitClause,
 
 
 function ps_displayPhoto( $url, $author_name, $subject_names,
-                          $submission_time ) {    
+                          $submission_time ) {
+
+    global $submittedPhotoURL;
+    $url = $submittedPhotoURL . basename( $url );
     
     echo "<table width=400 border=0><tr><td colspan=2>";
         
